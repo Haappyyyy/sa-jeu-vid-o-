@@ -1,3 +1,7 @@
+import extensions.CSVFile;
+
+
+
 class HelloWord extends Program{
     
     final int xTailleMenu = 150;
@@ -74,13 +78,53 @@ class HelloWord extends Program{
         println(menu);
     }
 
+    String toString(CSVFile voc){
+        String res ="";
+        String[][] content = new String[rowCount(voc)][2];
+        for(int y = 0; y < length(content, 1); y++){
+            for(int x = 0; x < length(content, 2); x++){
+                println("Index : " + y);
+                content[y][x] = getCell(voc, y, x);
+            }
+        }
+
+        for(int y = 0; y < length(content, 1); y++){
+                println(content[y][0] + " = " + content[y][1]);
+        }
+
+        /*
+        while (ready(voc)){
+            res= res + getCell(voc, 0, 0) + "\n";
+        }
+        */
+        return res;
+
+        
+    }
+
+
+
     void algorithm(){
+        CSVFile voc = loadCSV("fichiers/voc.csv");
         char[][] Identifieur = new char[yTailleMenu][xTailleMenu];
+        Utilisateur user = new Utilisateur();
+        println("Bonjour! Quel est ton nom?");
+        user.prenom=readString();
+        println("Dans quel niveau d'enseignement es-tu?");
+        println("1-CE2");
+        println("2-CM1");
+        println("3-CM2");
+        user.niveau=readInt();
         initialiserIdentifieur(Identifieur);
         afficherIdentifieur(Identifieur);
         println("--------------------------------------------------------------------");
         insérerBordure(Identifieur, 0, 0, xTailleMenu-1, yTailleMenu-1, '═');
         insérerBordure(Identifieur, 20, 5, xTailleMenu-21, yTailleMenu-6, '━');
         afficherIdentifieur(Identifieur);
+        println(toString(voc));
+       
+
+
+
     }
 }
