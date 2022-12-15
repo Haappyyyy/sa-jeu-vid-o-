@@ -78,35 +78,113 @@ class HelloWord extends Program{
         println(menu);
     }
 
-    String toString(CSVFile voc){
+    String toString(String[][] content){
         String res ="";
-        String[][] content = new String[rowCount(voc)][2];
-        for(int y = 0; y < length(content, 1); y++){
-            for(int x = 0; x < length(content, 2); x++){
-                println("Index : " + y);
-                content[y][x] = getCell(voc, y, x);
-            }
-        }
 
         for(int y = 0; y < length(content, 1); y++){
                 println(content[y][0] + " = " + content[y][1]);
         }
 
-        /*
-        while (ready(voc)){
-            res= res + getCell(voc, 0, 0) + "\n";
-        }
-        */
         return res;
 
         
     }
 
+    boolean Perdu(Utilisateur user){
+        boolean p=false;
+        if(user.vies==0){
+            p = true;
+        }
+        return p;
+    }
+
+    boolean Gagné(Utilisateur user){
+        boolean g=false;
+        if(user.victoires==5){
+            g=true;
+        }
+        return g;
+    }
+
+
+
+
+    boolean Traduction(Mot[] words,Utilisateur user){
+        Mot motactuel;
+        boolean gagné= false;
+        String reponse="";
+        int victoires=0;
+        int vies=5;
+        if (!choixlangue()){
+            while (vies>0 && !(victoires==5)){
+                motactuel = words[(int)(random()*length(words,1))];
+                println("Trouve la traduction en français de " + "\"" + motactuel.moten + "\"" );
+                reponse = readString();
+                if (equals(reponse, motactuel.motfr)){
+                    println("Bravo tu as trouvé!");
+                    victoires = victoires + 1;
+                    println("Tu as " + victoires + " " + "points");
+                    
+                }
+                else {
+                    vies = vies - 1;
+                    println("C'est erroné. Il te reste " + vies + " " + "vies");
+                    
+                }
+            }
+        }
+        else {
+            while (vies>0 && !(victoires==5)){
+                motactuel = words[(int)(random()*length(words,1))];
+                println("Trouve la traduction en anglais de " + motactuel.motfr);
+                reponse = readString();
+                if (equals(reponse, motactuel.moten)){
+                    println("Bravo tu as trouvé!");
+                    victoires = victoires + 1;
+                    println("Tu as " + victoires + "points");
+                }
+                else {
+                    vies = vies - 1;
+                    println("C'est erroné. Il te reste" + vies + " " + "vies");
+
+                }
+            }
+        }
+        if (victoires==5){
+            println("Bravo tu as gagné le jeu!");
+            gagné = true;
+        }
+        if (vies==0){
+            println("Dommage, tu as perdu.");
+            gagné=false;
+        }
+
+        return gagné;
+    }
+
+    boolean choixlangue(){
+        return random() < 0.5;
+    }
+
+    
+    void loadWords(Mot[] words, CSVFile voc){
+        for(int y = 0; y < length(words, 1); y++){
+            words[y] = newMot(getCell(voc, y, 1), getCell(voc, y, 0));
+        }
+    }
+
+    Mot newMot(String motFr, String motEn){
+        Mot mot = new Mot();
+        mot.motfr = motFr;
+        mot.moten = motEn;
+        return mot;
+    }
 
 
     void algorithm(){
         CSVFile voc = loadCSV("fichiers/voc.csv");
-        char[][] Identifieur = new char[yTailleMenu][xTailleMenu];
+        Mot[] allWords = new Mot[rowCount(voc)];
+        loadWords(allWords, voc);
         Utilisateur user = new Utilisateur();
         println("Bonjour! Quel est ton nom?");
         user.prenom=readString();
@@ -115,16 +193,8 @@ class HelloWord extends Program{
         println("2-CM1");
         println("3-CM2");
         user.niveau=readInt();
-        initialiserIdentifieur(Identifieur);
-        afficherIdentifieur(Identifieur);
-        println("--------------------------------------------------------------------");
-        insérerBordure(Identifieur, 0, 0, xTailleMenu-1, yTailleMenu-1, '═');
-        insérerBordure(Identifieur, 20, 5, xTailleMenu-21, yTailleMenu-6, '━');
-        afficherIdentifieur(Identifieur);
-        println(toString(voc));
+        Traduction(allWords,user);
+        
        
-
-
-
     }
 }
