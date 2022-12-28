@@ -1,5 +1,7 @@
 class Utilisateur {
     String prenom;
-    int age;
-    int niveau;
+    String nom;
+    String niveau;
+    int vies = 5;
+    int victoires = 0;
 }
