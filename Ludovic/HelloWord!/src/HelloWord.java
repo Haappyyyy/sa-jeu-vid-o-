@@ -94,7 +94,7 @@ class HelloWord extends Program{
         return charAt(reponse, 0)-'0';
     }
 
-    String[] recupererIdentifiants(){
+    String[] recupererIdentifiants(String[][] idList, boolean aUneSession){
         String[] GUIOriginal = initialiseStringTable("ConnectionSession");
         String[] GUI = initialiseStringTable("ConnectionSession");
         String prenom = "";
@@ -102,38 +102,66 @@ class HelloWord extends Program{
         String niveau = "";
         String reponse;
         boolean identifiantsCorrects = false;
+        int question=0;
+        
         while(!identifiantsCorrects){
-            do{
-                affichage(GUI);
-                println();
-                print("Entre ton prénom : ");
-                prenom = readString();
-            }while(!NomCorrecte(prenom));
-            metAJourGUI(GUIOriginal, GUI ,prenom, 0); //0=zone de prénom
-            do{
-                affichage(GUI);
-                println();
-                print("Entre ton nom : ");
-                nom = readString();
-            }while(!NomCorrecte(nom));
-            metAJourGUI(GUIOriginal, GUI, nom, 1); //1=zone de nom
-            do{
-                affichage(GUI);
-                println();
-                print("Entre ta classe : ");
-                niveau = readString();
-            }while(!classeCorrecte(niveau));
-            metAJourGUI(GUIOriginal, GUI, niveau, 2); //2=zone de classe
-            do{
-                affichage(GUI);
-                println();
-                print("Es-tu sûr que tes identifiants sont correctes ? (oui/non) : ");
-                reponse = readString();
-            }while(!confirmeInscription(reponse));
-            if(equals(reponse, "oui")){
-                identifiantsCorrects = true;
+                if(!aUneSession){
+                    do{
+                        affichage(GUI);
+                        println();
+                        print("Entre ton prénom : ");
+                        prenom = readString();
+                    }while(!NomCorrecte(prenom));
+                    metAJourGUI(GUIOriginal, GUI ,prenom, 0); //0=zone de prénom
+                    do{
+                        affichage(GUI);
+                        println();
+                        print("Entre ton nom : ");
+                        nom = readString();
+                    }while(!NomCorrecte(nom));
+                    metAJourGUI(GUIOriginal, GUI, nom, 1); //1=zone de nom
+                    do{
+                        affichage(GUI);
+                        println();
+                        print("Entre ta classe : ");
+                        niveau = readString();
+                    }while(!classeCorrecte(niveau));
+                    metAJourGUI(GUIOriginal, GUI, niveau, 2); //2=zone de classe
+                    do{
+                        affichage(GUI);
+                        println();
+                        print("Es-tu sûr que tes identifiants sont corrects? (oui/non) : ");
+                        reponse = readString();
+                    }while(!confirmeInscription(reponse));
+                    if(equals(reponse, "oui")){
+                        identifiantsCorrects = true;
+                    }
+                }
+                else{
+                    println("Voici la liste des sessions déjà créées :");
+                    println();
+                    if(length(idList,1)<1){
+                        println("Il n'y a pas de sessions qui ont été créées");
+                    }
+                    else{
+                        for(int i=1;i<length(idList,1);i++){
+                            print(i + "." + " ");
+                            for(int y=1; y<4;y++){
+                                print(idList[i][y] + " ");
+                            }
+                        println(); 
+                        }
+                        println();
+                        println("Choississez votre session :");
+                        question=readInt();
+                        prenom=idList[question][1];
+                        nom=idList[question][2];
+                        niveau=idList[question][3];
+                        identifiantsCorrects=true;
+                    }
+                    
+                }    
             }
-        }
         String[] identifiants = new String[]{"0",prenom, nom, niveau, "", ""};
         return identifiants;
     }
@@ -478,7 +506,7 @@ int stringEnInt(String nbr){
             if(possèdeSession()){ // Si on a une session.
                 identifier = false;
                 do{
-                    identifiants = recupererIdentifiants();
+                    identifiants = recupererIdentifiants(idList, true);
                     if(identifiantExiste(idList, identifiants)){ // Si les identifiants existent, on initialise le type Utilisateur.
                         int ligneId = trouverNumLigneId(idList, identifiants);
                         identifiants[0] = intToString(ligneId-1);
@@ -495,7 +523,7 @@ int stringEnInt(String nbr){
             else{ // Si on n'en a pas.
                 identifier = false;
                 do{
-                    identifiants = recupererIdentifiants(); // On récupère les nouveaux identifiants
+                    identifiants = recupererIdentifiants(idList, false); // On récupère les nouveaux identifiants
                     if(!identifiantExiste(idList, identifiants)){ // Si les identifiants n'existent pas déjà, on les rajoutent aux sauvegardes
                         identifiants[0] = intToString(trouverNumLigneId(idList ,identifiants));
                         identifiants[4] = "5";
