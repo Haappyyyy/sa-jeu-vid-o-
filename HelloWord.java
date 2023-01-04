@@ -109,21 +109,21 @@ class HelloWord extends Program{
                 print("Entre ton prénom : ");
                 prenom = readString();
             }while(!NomCorrecte(prenom));
-            jepensequecettefonctionvamettreajourlanouvellesessionparunnouveaustringprenomnomniveaupourquelejoueursereperemieux(GUIOriginal, GUI ,prenom, 0); //0=zone de prénom
+            metAJourGUI(GUIOriginal, GUI ,prenom, 0); //0=zone de prénom
             do{
                 affichage(GUI);
                 println();
                 print("Entre ton nom : ");
                 nom = readString();
             }while(!NomCorrecte(nom));
-            jepensequecettefonctionvamettreajourlanouvellesessionparunnouveaustringprenomnomniveaupourquelejoueursereperemieux(GUIOriginal, GUI, nom, 1); //1=zone de nom
+            metAJourGUI(GUIOriginal, GUI, nom, 1); //1=zone de nom
             do{
                 affichage(GUI);
                 println();
                 print("Entre ta classe : ");
                 niveau = readString();
             }while(!classeCorrecte(niveau));
-            jepensequecettefonctionvamettreajourlanouvellesessionparunnouveaustringprenomnomniveaupourquelejoueursereperemieux(GUIOriginal, GUI, niveau, 2); //2=zone de classe
+            metAJourGUI(GUIOriginal, GUI, niveau, 2); //2=zone de classe
             do{
                 affichage(GUI);
                 println();
@@ -134,7 +134,7 @@ class HelloWord extends Program{
                 identifiantsCorrects = true;
             }
         }
-        String[] identifiants = new String[]{prenom, nom, niveau};
+        String[] identifiants = new String[]{"0",prenom, nom, niveau, "", "", "", "", ""};
         return identifiants;
     }
 
@@ -150,7 +150,7 @@ class HelloWord extends Program{
         return res;
     }
 
-    void jepensequecettefonctionvamettreajourlanouvellesessionparunnouveaustringprenomnomniveaupourquelejoueursereperemieux(String[] GUIOriginal, String[] GUI, String chaine, int i){
+    void metAJourGUI(String[] GUIOriginal, String[] GUI, String chaine, int i){
         if(i==0){
             String ligne = GUIOriginal[1];
             String debut = debutNouvelleSession(ligne);
@@ -227,9 +227,9 @@ class HelloWord extends Program{
         boolean trouver = false;
         int i = 0;
         while(!trouver && i<length(idList, 1)){         // Boucle while qui redémare tant qu'elle n'est pas arrivée à la fin de la liste ou qu'elle n'a pas trouvée de doublon.
-            if(equals(idList[i][0], id[0])){            // Première condition qui vérifie si un prénom déjà enregistré est égal à celui du nouvel identifiant.
-                if(equals(idList[i][1], id[1])){        // Deuxième condition qui vérifie si un nom déjà enregistré est égal à celui du nouvel identifiant en plus du prénom.
-                    if(equals(idList[i][2], id[2])){    // Troisième condition qui vérifie, dans le cas où le nom et prénom sont égaux à ceux du nouvel identifiant, si ils sont de la même classe.
+            if(equals(idList[i][1], id[1])){            // Première condition qui vérifie si un prénom déjà enregistré est égal à celui du nouvel identifiant.
+                if(equals(idList[i][2], id[2])){        // Deuxième condition qui vérifie si un nom déjà enregistré est égal à celui du nouvel identifiant en plus du prénom.
+                    if(equals(idList[i][3], id[3])){    // Troisième condition qui vérifie, dans le cas où le nom et prénom sont égaux à ceux du nouvel identifiant, si ils sont de la même classe.
                         trouver = true;
                     }
                 }
@@ -253,10 +253,12 @@ class HelloWord extends Program{
 
     String[][] insererNouveauxIdentifiants(String[][] idList, String[] id){
         idList = ajouterLigne(idList); // On agrandit la table pour qu'elle puisse acceuillir un type utilisateur supplémentaire.
-        for(int i=0; i<length(id); i++){//                      \
-            idList[length(idList, 1)-1][i] = id[i];//            | Une boucle for pour incorporer le nouveau type utilisateur passé en paramètre aux sauvegardes
-            saveCSV(idList, NOM_REPERTOIRE +"/saves2.csv");//    |
-        }//                                                     /
+        for(int i=0; i<length(id); i++){//                                  \
+            idList[length(idList, 1)-1][i] = id[i];//                        | Une boucle for pour incorporer le nouveau type utilisateur passé en paramètre aux sauvegardes
+            saveCSV(idList, NOM_REPERTOIRE +"/ComptesEnregistrés.csv");//    |
+        }//                                                                 /
+        idList[length(idList, 1)-1][0] = intToString(length(idList, 1)-1);// On Crée et inére un nouvel Id.
+        saveCSV(idList, NOM_REPERTOIRE +"/ComptesEnregistrés.csv");// On sauvegarde.
         return idList;
     }
 
@@ -264,8 +266,6 @@ class HelloWord extends Program{
 
     String[][] ajouterLigne(String[][] idList){
         String[][] nouvelIdList = new String[length(idList,1)+1][length(idList, 2)]; // On créer une nouvelle table d'une ligne supplémentaire.
-        //println(length(idList, 1)+1);
-        //println(length(idList,2));
         for(int i=0; i<length(idList, 1); i++){//      \
             for(int j=0; j<length(idList, 2); j++){//   |  
                 println(idList[i][j]);//                | Deux boucles for pour remplir la nouvelle table 2 dimensions depuis l'ancienne.
@@ -277,13 +277,38 @@ class HelloWord extends Program{
 
     Utilisateur initialiserUtilisateur(String[] identifiants){
         Utilisateur user = new Utilisateur();
-        user.prenom = identifiants[0];
-        user.nom = identifiants[1];
-        user.niveau = identifiants[2];
+        user.id = stringEnInt(identifiants[0]);
+        user.prenom = identifiants[1];
+        user.nom = identifiants[2];
+        user.niveau = identifiants[3];
+        user.premierjeu_vies = stringEnInt(identifiants[4]);
+        user.premierjeu_victoires = stringEnInt(identifiants[5]);
         return user;
     }
 
-    void lancerJeu1(Utilisateur user){
+    int trouverNumLigneId(String[][] idList, String[] id){
+        boolean trouver = false;
+        int i = 0;
+        while(!trouver && i<length(idList, 1)){         // Boucle while qui redémare tant qu'elle n'est pas arrivée à la fin de la liste ou qu'elle n'a pas trouvée de doublon.
+            println(idList[i][1]);
+            if(equals(idList[i][1], id[1])){            // Première condition qui vérifie si un prénom déjà enregistré est égal à celui du nouvel identifiant.
+                println(idList[i][2]);
+                if(equals(idList[i][2], id[2])){        // Deuxième condition qui vérifie si un nom déjà enregistré est égal à celui du nouvel identifiant en plus du prénom.
+                    println(idList[i][3]);
+                    if(equals(idList[i][3], id[3])){    // Troisième condition qui vérifie, dans le cas où le nom et prénom sont égaux à ceux du nouvel identifiant, si ils sont de la même classe.                        
+                        trouver = true;
+                    }
+                }
+            }
+            if(!trouver){
+                i++;
+            }
+        }
+        println(i);
+        return i;
+    }
+
+    void lancerJeu1(Utilisateur user, String[] save){
         CSVFile voc = loadCSV("../ressources/voc.csv");
         Mot[] allWords = new Mot[rowCount(voc)];
         loadWords(allWords, voc);
@@ -295,7 +320,7 @@ class HelloWord extends Program{
         //println("2-CM1");                                      |
         //println("3-CM2");                                      |
         //user.niveau=readString();                             /
-        Traduction(allWords,user);
+        Traduction(allWords,user,save);
     }
 
     Mot newMot(String motFr, String motEn){
@@ -315,62 +340,115 @@ class HelloWord extends Program{
         return random() < 0.5;
     }
 
-    boolean Traduction(Mot[] words,Utilisateur user){
-        Mot motactuel;
+    boolean Traduction(Mot[] words,Utilisateur user, String[] save){
+        boolean recommencer=true;
         boolean gagné= false;
-        String reponse="";
-        int victoires=0;
-        int vies=5;
-        if (!choixlangue()){
-            while (vies>0 && !(victoires==5)){
+        while(recommencer){
+            Mot motactuel;
+            String reponse="";
+            int question=0;
+            boolean quitter=false;
+            if (!choixlangue()){
+            while (user.premierjeu_vies>0 && !(user.premierjeu_victoires==5) && !quitter){
                 motactuel = words[(int)(random()*length(words,1))];
+                println();
+                print(user.premierjeu_vies + " ");
+                print(user.premierjeu_victoires + " ");
                 println("Trouve la traduction en français de " + "\"" + motactuel.moten + "\"" );
+                println();
+                println("Pour quitter le jeu appuie sur 2");
                 reponse = readString();
                 if (equals(reponse, motactuel.motfr)){
+                    println();
                     println("Bravo tu as trouvé!");
-                    victoires = victoires + 1;
-                    println("Tu as " + victoires + " " + "points");
+                    user.premierjeu_victoires = user.premierjeu_victoires + 1;
+                    println("Tu as " + user.premierjeu_victoires + " " + "points");
+                    println();
                     
                 }
+                else if(equals(reponse,"2")){;
+                    println("A une prochaine fois!");
+                    quitter=true; 
+                }
                 else {
-                    vies = vies - 1;
-                    println("C'est erroné. Il te reste " + vies + " " + "vies");
+                    user.premierjeu_vies = user.premierjeu_vies - 1;
+                    println();
+                    println("C'est erroné. Il te reste " + user.premierjeu_vies + " " + "vies");
+                    println();
                     
                 }
             }
         }
         else {
-            while (vies>0 && !(victoires==5)){
+            while (user.premierjeu_vies>0 && !(user.premierjeu_victoires==5)&& !quitter){
                 motactuel = words[(int)(random()*length(words,1))];
+                println();
+                print(user.premierjeu_vies + " ");
+                print(user.premierjeu_victoires + " ");
                 println("Trouve la traduction en anglais de " + motactuel.motfr);
+                println();
+                println("Pour quitter le jeu appuie sur 2");
                 reponse = readString();
                 if (equals(reponse, motactuel.moten)){
+                    println();
                     println("Bravo tu as trouvé!");
-                    victoires = victoires + 1;
-                    println("Tu as " + victoires + "points");
+                    user.premierjeu_victoires = user.premierjeu_victoires + 1;
+                    println("Tu as " + user.premierjeu_victoires + " " + "points");
+                    println();
+                }
+                else if(equals(reponse,"2")){
+                    println("A une prochaine fois !");
+                    quitter=true;
                 }
                 else {
-                    vies = vies - 1;
-                    println("C'est erroné. Il te reste" + vies + " " + "vies");
-
+                    user.premierjeu_vies = user.premierjeu_vies - 1;
+                    println("C'est erroné. Il te reste" + " " + user.premierjeu_vies + " " + "vies");
+                    println();
                 }
             }
         }
-        if (victoires==5){
+        if (user.premierjeu_victoires==5){
             println("Bravo tu as gagné le jeu!");
             gagné = true;
         }
-        if (vies==0){
+        if (user.premierjeu_vies==0){
             println("Dommage, tu as perdu.");
             gagné=false;
         }
 
-        return gagné;
+        println();
+        println("Veux-tu recommencer la partie?");
+        println("1. Oui");
+        println("2. Non");
+        question=readInt();
+        if(question==1){
+            recommencer=true;
+            user.premierjeu_victoires=0;
+            user.premierjeu_vies=5;
+        }
+        else if(question==2){
+            save[4]=intToString(user.premierjeu_vies);
+            save[5]=intToString(user.premierjeu_victoires);
+            recommencer=false;
+        }
+        
     }
+    return gagné;
+}
 
+String intToString(int nbr){
+    String res = "";
+    res+=nbr;
+    return res;
+}
+
+int stringEnInt(String nbr){
+    return (((int) charAt(nbr, 0))-((int) '0'));
+}
+        
     boolean Perdu(Utilisateur user){
         boolean p=false;
-        if(user.vies==0){
+        if(user.premierjeu_vies==0){
             p = true;
         }
         return p;
@@ -378,7 +456,7 @@ class HelloWord extends Program{
 
     boolean Gagné(Utilisateur user){
         boolean g=false;
-        if(user.victoires==5){
+        if(user.premierjeu_victoires==5){
             g=true;
         }
         return g;
@@ -391,15 +469,22 @@ class HelloWord extends Program{
         boolean quitter = false;
         boolean estConnecter = false;
         boolean identifier = false;
-        String[] identifiants = new String[]{"","",""};
+        String[] identifiants = new String[]{"0","","","","5","0","0","0","0"};
         Utilisateur user = initialiserUtilisateur(identifiants);
         
         while(!quitter){ // Tant que l'on n'a pas demandé de quitter.
-            if(possèdeSession()){ // Demande si on n'a une session.
+            if(possèdeSession()){ // Si on a une session.
                 identifier = false;
                 do{
                     identifiants = recupererIdentifiants();
-                    if(identifiantExiste(idList, identifiants)){ // Si les identifiants n'existent pas déjà, on les rajoutent aux sauvegardes
+                    if(identifiantExiste(idList, identifiants)){ // Si les identifiants existent, on initialise le type Utilisateur.
+                        int ligneId = trouverNumLigneId(idList, identifiants);
+                        identifiants[0] = intToString(ligneId-1);
+                        identifiants[4] = idList[ligneId][4];
+                        identifiants[5] = idList[ligneId][5];
+                        identifiants[6] = idList[ligneId][6];
+                        identifiants[7] = idList[ligneId][7];
+                        identifiants[8] = idList[ligneId][8];
                         identifier = true;
                         println("Identifiants corrects !");
                         user = initialiserUtilisateur(identifiants);
@@ -413,6 +498,12 @@ class HelloWord extends Program{
                 do{
                     identifiants = recupererIdentifiants(); // On récupère les nouveaux identifiants
                     if(!identifiantExiste(idList, identifiants)){ // Si les identifiants n'existent pas déjà, on les rajoutent aux sauvegardes
+                        identifiants[0] = intToString(trouverNumLigneId(idList ,identifiants));
+                        identifiants[4] = "5";
+                        identifiants[5] = "0";
+                        identifiants[6] = "0";
+                        identifiants[7] = "0";
+                        identifiants[8] = "0";
                         identifier = true;
                         idList = insererNouveauxIdentifiants(idList, identifiants); // On rejoute à la sauvegarde les nouveaux identifiants
                         println("Identifiants enreistrés avec succès !");
@@ -426,7 +517,11 @@ class HelloWord extends Program{
             while(estConnecter && !quitter){ // Tant que l'on est connecté
                 int choix = choixMenu();
                 if(choix==1){
-                    lancerJeu1(user); // jeu numéro 1
+                    lancerJeu1(user, identifiants); // jeu numéro 1
+                    for(int i=0; i<length(identifiants); i++){          
+                        idList[length(idList, 1)-1][i] = identifiants[i];
+                    }
+                    saveCSV(idList, NOM_REPERTOIRE +"/ComptesEnregistrés.csv");
                 }
                 else if(choix==2){
                 }
