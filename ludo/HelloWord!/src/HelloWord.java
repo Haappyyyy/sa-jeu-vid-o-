@@ -395,9 +395,11 @@
         }
 
         Utilisateur Traduction(Mot[] words,Utilisateur user){
+            String[] GUI = initialiseStringTable("menuJeuTraduction");
             boolean recommencer=true;
             boolean gagné= false;
             while(recommencer){
+                GUI = maj_GUI_JeuTraduction(GUI, user);
                 Mot motactuel;
                 String reponse="";
                 int question=0;
@@ -488,6 +490,10 @@
             
         }
         return user;
+    }
+
+    String[] maj_GUI_JeuTraduction(String[] GUI, Utilisateur user){
+        return GUI;
     }
 
     String intToString(int nbr){
@@ -617,9 +623,8 @@
                         user = initialiserUtilisateur(identifiants);
                         identifier = true;
                         idList = insererNouveauxIdentifiants(idList, identifiants); // On rejoute à la sauvegarde les nouveaux identifiants
-                        println("Identifiants enreistrés avec succès !");
-                        user = initialiserUtilisateur(identifiants);
-
+                        println("Identifiants enregistrés avec succès !");
+                        sauvegarderUtilisateur(user, idList);
                     }
                 }while(!identifier);
             }
@@ -664,7 +669,7 @@
             }
             else if(nombreIdentifiants>=1 && nombreIdentifiants<14){
                 for(int i=0; i<nombreIdentifiants; i++){
-                    String ligne = basMenu[i+2];
+                    String ligne = basMenu[i];
                     println(i);
                     println(nombreIdentifiants);
                     basMenu[i] = insererIdentifiantsLigneMenu(ligne, listeDesUtilisateurs[i]);
@@ -706,10 +711,10 @@
             Utilisateur user = new Utilisateur();
             
             while(!quitter){ // Tant que l'on n'a pas demandé de quitter.
-                String[] identifiants = new String[]{"0","Ludovic", "Bernard", "CM2", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"};
                 while(!estConnecter){
                     user = connectionUtilisateur(listeDesUtilisateurs, idList);
                     estConnecter=true;
+                    sauvegarderUtilisateur(user,idList);
                 }
                 while(estConnecter && !quitter){ // Tant que l'on est connecté
                     int choix = choixMenu();
@@ -724,10 +729,6 @@
                         Utilisateur deuxiemeUser = initialiserUtilisateur(identifiantsDeuxiemeJoueur);
                         lancerJCJ(user, deuxiemeUser);
                         sauvegarderUtilisateur(user,idList);
-                        //for(int i=0; i<length(identifiants); i++){          
-                        //    idList[stringEnInt(identifiants[0])][i] = identifiants[i];
-                        //}
-                        //saveCSV(idList, NOM_REPERTOIRE +"/ComptesEnregistrés.csv");
                     }
                     else if(choix==4){
                     }
