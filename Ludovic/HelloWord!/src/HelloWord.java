@@ -54,6 +54,17 @@ class HelloWord extends Program{
         return GUI;
     }
 
+        // recupererTableSimple : renvoie les identifiants du fichier du CSV de sauvegarde à partir d'une ligne passée en paramètre.
+
+    String[] recupererTableSimple(String[][] idList, int ligne){ 
+        String[] identifiants = new String[length(idList, 2)];
+        println(length(idList, 2));
+        for(int i=0; i<length(identifiants); i++){
+            identifiants[i] = idList[ligne][i];
+        }
+        return identifiants;
+    }
+
     void affichage(String[] Identifieur){
         clear();
         for(int i=0; i<length(Identifieur); i++){
@@ -94,6 +105,7 @@ class HelloWord extends Program{
         return charAt(reponse, 0)-'0';
     }
 
+        // recupererIdentifiants : demande si tu as déjà une session et se connecte si oui, propose de créer une nouvelle session sinon
     String[] recupererIdentifiants(String[][] idList, boolean aUneSession){
         String[] GUIOriginal = initialiseStringTable("ConnectionSession");
         String[] GUI = initialiseStringTable("ConnectionSession");
@@ -166,6 +178,7 @@ class HelloWord extends Program{
         return identifiants;
     }
 
+
     boolean NomCorrecte(String nom){
         boolean res=true;
         int i=0;
@@ -184,21 +197,21 @@ class HelloWord extends Program{
             String debut = debutNouvelleSession(ligne);
             String fin = finNouvelleSession(ligne, length(debut)-1);
             String espaces = substring(ligne, length(debut)-1, (length(ligne)-length(fin)));
-            GUI[1] = debut + completerVide(espaces, chaine) + fin;
+            GUI[1] = debut + completerVide(espaces, chaine, 0) + fin;
         }
         else if(i==1){
             String ligne = GUIOriginal[3];
             String debut = debutNouvelleSession(ligne);
             String fin = finNouvelleSession(ligne, length(debut)-1);
             String espaces = substring(ligne, length(debut)-1, (length(ligne)-length(fin)));
-            GUI[3] = debut + completerVide(espaces, chaine) + fin;
+            GUI[3] = debut + completerVide(espaces, chaine, 0) + fin;
         }
         else if(i==2){
             String ligne = GUIOriginal[5];
             String debut = debutNouvelleSession(ligne);
             String fin = finNouvelleSession(ligne, length(debut)-1);
             String espaces = substring(ligne, length(debut)-1, (length(ligne)-length(fin)));
-            GUI[5] = debut + completerVide(espaces, chaine) + fin;
+            GUI[5] = debut + completerVide(espaces, chaine, 0) + fin;
         }
     }
 
@@ -226,9 +239,27 @@ class HelloWord extends Program{
         return substring(chaine, i-1, length(chaine));
     }
 
-    String completerVide(String espaces, String chaine){
-        espaces = substring(espaces, length(chaine)-1,length(espaces)-2);
-        return (chaine + espaces);
+    String completerVide(String espaces, String chaine, int position){
+        if(position==0){// Condition pour position gauche.
+            espaces = substring(espaces, length(chaine)-1,length(espaces)-2);
+            return (chaine + espaces);
+        }
+        else if(position==1){// Condition pour position centrale
+            //println(length(espaces)-length(chaine));
+            //println(length(espaces));
+            //println(length(chaine));
+            String espacesGauche = substring(espaces, 0, ((length(espaces)-length(chaine))/2));
+            String espacesDroit = substring(espaces, length(chaine)+((length(espaces)-length(chaine))/2), length(espaces));
+            //println("I"+ espacesGauche +"I");
+            //println("I"+ espacesDroit +"I");
+            //println(length(chaine)+((length(espaces)-length(chaine))/2));
+            return (espacesGauche + chaine + espacesDroit);
+        }
+        else{// Condition pour position droite.
+            espaces = substring(espaces, 0, (length(espaces)-length(chaine)));
+            return (espaces + chaine);
+        }
+        
     }
 
     boolean classeCorrecte(String classe){
@@ -294,8 +325,6 @@ class HelloWord extends Program{
 
     String[][] ajouterLigne(String[][] idList){
         String[][] nouvelIdList = new String[length(idList,1)+1][length(idList, 2)]; // On créer une nouvelle table d'une ligne supplémentaire.
-        //println(length(idList, 1)+1);
-        //println(length(idList,2));
         for(int i=0; i<length(idList, 1); i++){//      \
             for(int j=0; j<length(idList, 2); j++){//   |  
                 println(idList[i][j]);//                | Deux boucles for pour remplir la nouvelle table 2 dimensions depuis l'ancienne.
@@ -305,14 +334,34 @@ class HelloWord extends Program{
         return nouvelIdList; // On retourne la nouvelle table.
     }
 
+    Utilisateur[] initialiserListeUtilisateur(String[][] idList){  
+        Utilisateur[] listeDesUtilisateurs = new Utilisateur[length(idList, 1)-1];
+        if((length(idList, 1)-1)>0){
+            for(int i=1; i<length(idList, 1); i++){
+                println("idlist, i "+ i);
+                listeDesUtilisateurs[i-1] = initialiserUtilisateur(recupererTableSimple(idList, i));
+            }
+        }
+        return listeDesUtilisateurs;
+    }
+
     Utilisateur initialiserUtilisateur(String[] identifiants){
         Utilisateur user = new Utilisateur();
         user.id = stringEnInt(identifiants[0]);
         user.prenom = identifiants[1];
         user.nom = identifiants[2];
-        user.niveau = identifiants[3];
-        user.vies = stringEnInt(identifiants[4]);
-        user.victoires = stringEnInt(identifiants[5]);
+        user.classe = identifiants[3];
+        user.premierjeu_vies = stringEnInt(identifiants[4]);
+        user.premierjeu_victoires = stringEnInt(identifiants[5]);
+        user.premierjeu_parties_gagner = stringEnInt(identifiants[6]);
+        user.premierjeu_parties_perdu = stringEnInt(identifiants[7]);
+        user.premierjeu_mots_traduits = stringEnInt(identifiants[8]);
+        user.JCJ_vies = stringEnInt(identifiants[9]);
+        user.JCJ_score = stringEnInt(identifiants[10]);
+        user.JCJ_manche_remporter = stringEnInt(identifiants[11]);
+        user.JCJ_manche_perdu = stringEnInt(identifiants[12]);
+        user.JCJ_mots_traduits = stringEnInt(identifiants[13]);
+
         return user;
     }
 
@@ -338,19 +387,12 @@ class HelloWord extends Program{
         return i;
     }
 
-    void lancerJeu1(Utilisateur user, String[] save){
+    Utilisateur lancerJeu1(Utilisateur user){
         CSVFile voc = loadCSV("../ressources/voc.csv");
         Mot[] allWords = new Mot[rowCount(voc)];
         loadWords(allWords, voc);
-        //Utilisateur user = new Utilisateur();                 \
-        //println("Bonjour! Quel est ton nom?");                 |
-        //user.prenom=readString();                              |
-        //println("Dans quel niveau d'enseignement es-tu?");     |  Incorporer dans le void algorithm
-        //println("1-CE2");                                      |  Mit en paramètre de la fonction lanceJeu1
-        //println("2-CM1");                                      |
-        //println("3-CM2");                                      |
-        //user.niveau=readString();                             /
-        Traduction(allWords,user,save);
+        user = Traduction(allWords,user);
+        return user;
     }
 
     Mot newMot(String motFr, String motEn){
@@ -370,7 +412,7 @@ class HelloWord extends Program{
         return random() < 0.5;
     }
 
-    boolean Traduction(Mot[] words,Utilisateur user, String[] save){
+    Utilisateur Traduction(Mot[] words,Utilisateur user){
         boolean recommencer=true;
         boolean gagné= false;
         while(recommencer){
@@ -379,11 +421,11 @@ class HelloWord extends Program{
             int question=0;
             boolean quitter=false;
             if (!choixlangue()){
-            while (user.vies>0 && !(user.victoires==5) && !quitter){
+            while (user.premierjeu_vies>0 && !(user.premierjeu_victoires==5) && !quitter){
                 motactuel = words[(int)(random()*length(words,1))];
                 println();
-                print(user.vies + " ");
-                print(user.victoires + " ");
+                print(user.premierjeu_vies + " ");
+                print(user.premierjeu_victoires + " ");
                 println("Trouve la traduction en français de " + "\"" + motactuel.moten + "\"" );
                 println();
                 println("Pour quitter le jeu appuie sur 2");
@@ -391,8 +433,8 @@ class HelloWord extends Program{
                 if (equals(reponse, motactuel.motfr)){
                     println();
                     println("Bravo tu as trouvé!");
-                    user.victoires = user.victoires + 1;
-                    println("Tu as " + user.victoires + " " + "points");
+                    user.premierjeu_victoires = user.premierjeu_victoires + 1;
+                    println("Tu as " + user.premierjeu_victoires + " " + "points");
                     println();
                     
                 }
@@ -401,20 +443,20 @@ class HelloWord extends Program{
                     quitter=true; 
                 }
                 else {
-                    user.vies = user.vies - 1;
+                    user.premierjeu_vies = user.premierjeu_vies - 1;
                     println();
-                    println("C'est erroné. Il te reste " + user.vies + " " + "vies");
+                    println("C'est erroné. Il te reste " + user.premierjeu_vies + " " + "vies");
                     println();
                     
                 }
             }
         }
         else {
-            while (user.vies>0 && !(user.victoires==5)&& !quitter){
+            while (user.premierjeu_vies>0 && !(user.premierjeu_victoires==5)&& !quitter){
                 motactuel = words[(int)(random()*length(words,1))];
                 println();
-                print(user.vies + " ");
-                print(user.victoires + " ");
+                print(user.premierjeu_vies + " ");
+                print(user.premierjeu_victoires + " ");
                 println("Trouve la traduction en anglais de " + motactuel.motfr);
                 println();
                 println("Pour quitter le jeu appuie sur 2");
@@ -422,8 +464,8 @@ class HelloWord extends Program{
                 if (equals(reponse, motactuel.moten)){
                     println();
                     println("Bravo tu as trouvé!");
-                    user.victoires = user.victoires + 1;
-                    println("Tu as " + user.victoires + " " + "points");
+                    user.premierjeu_victoires = user.premierjeu_victoires + 1;
+                    println("Tu as " + user.premierjeu_victoires + " " + "points");
                     println();
                 }
                 else if(equals(reponse,"2")){
@@ -431,17 +473,17 @@ class HelloWord extends Program{
                     quitter=true;
                 }
                 else {
-                    user.vies = user.vies - 1;
-                    println("C'est erroné. Il te reste" + " " + user.vies + " " + "vies");
+                    user.premierjeu_vies = user.premierjeu_vies - 1;
+                    println("C'est erroné. Il te reste" + " " + user.premierjeu_vies + " " + "vies");
                     println();
                 }
             }
         }
-        if (user.victoires==5){
+        if (user.premierjeu_victoires==5){
             println("Bravo tu as gagné le jeu!");
             gagné = true;
         }
-        if (user.vies==0){
+        if (user.premierjeu_vies==0){
             println("Dommage, tu as perdu.");
             gagné=false;
         }
@@ -453,17 +495,15 @@ class HelloWord extends Program{
         question=readInt();
         if(question==1){
             recommencer=true;
-            user.victoires=0;
-            user.vies=5;
+            user.premierjeu_victoires=0;
+            user.premierjeu_vies=5;
         }
         else if(question==2){
-            save[4]=intToString(user.vies);
-            save[5]=intToString(user.victoires);
             recommencer=false;
         }
         
     }
-    return gagné;
+    return user;
 }
 
 String intToString(int nbr){
@@ -478,7 +518,7 @@ int stringEnInt(String nbr){
         
     boolean Perdu(Utilisateur user){
         boolean p=false;
-        if(user.vies==0){
+        if(user.premierjeu_vies==0){
             p = true;
         }
         return p;
@@ -486,10 +526,178 @@ int stringEnInt(String nbr){
 
     boolean Gagné(Utilisateur user){
         boolean g=false;
-        if(user.victoires==5){
+        if(user.premierjeu_victoires==5){
             g=true;
         }
         return g;
+    }
+
+    void lancerJCJ(Utilisateur premierJoueur, Utilisateur deuxiemeJoueur){
+
+        premierJoueur.JCJ_vies = 5;
+        deuxiemeJoueur.JCJ_vies = 5;
+
+        premierJoueur.JCJ_score = 10;
+        deuxiemeJoueur.JCJ_score = 10;
+
+        String[] GUI = initialiseStringTable("GUIJoueurContreJoueur");
+        affichage(GUI);
+        GUI = maj_GUI_JCJ(GUI, 6, premierJoueur.prenom, deuxiemeJoueur.prenom);
+        GUI = maj_GUI_JCJ(GUI, 8, intToString(premierJoueur.JCJ_vies), intToString(deuxiemeJoueur.JCJ_vies));
+        GUI = maj_GUI_JCJ(GUI, 9, intToString(premierJoueur.JCJ_score), intToString(deuxiemeJoueur.JCJ_score));
+        affichage(GUI);
+    }
+
+        /* maj_GUI_JCJ permet de mettre a jour le GUI pour le jeu JCJ et ainsi afficher les prenoms, vies, victoires et mots à traduire */
+
+    String[] maj_GUI_JCJ(String[] GUI, int numLigne, String premierJoueur, String deuxiemeJoueur){
+        if(numLigne==6){
+            String ligne = GUI[numLigne];                                                               //On récupère la ligne de prénom.
+            int[] positionReperes = chercheEmplacementReperes(ligne, ':');                                            //On récupère les positions des petits points.
+            ligne = integrerPrenomsJCJ(ligne, positionReperes, premierJoueur, deuxiemeJoueur);
+            GUI[numLigne] = ligne;
+        }
+        else if(numLigne==8){
+            String ligne = GUI[numLigne];                                                               //On récupère la ligne de prénom.
+            int[] positionReperes = chercheEmplacementReperes(ligne, ':');                                            //On récupère les positions des petits points.
+            ligne = integrerViesJCJ(ligne, positionReperes, premierJoueur, deuxiemeJoueur);
+            GUI[numLigne] = ligne;
+        }
+        else if(numLigne==9){
+            String ligne = GUI[numLigne];                                                               //On récupère la ligne de prénom.
+            int[] positionReperes = chercheEmplacementReperes(ligne, ':');                                            //On récupère les positions des petits points.
+            ligne = integrerScoreJCJ(ligne, positionReperes, premierJoueur, deuxiemeJoueur);
+            GUI[numLigne] = ligne;
+        }
+        else{
+            println(" /!\\ ERREUR maj_GUI_JCJ /!\\ ");
+        }
+        return GUI;                                                                                 
+    }
+
+        /* chercherEmplacementPrenom permet de trouver l'emplacement des petits points dans la ligne en paramètre. Utile pour les interfaces JCJ. */
+
+    int[] chercheEmplacementReperes(String ligne, char symbol){
+        int[] listePosition = new int[2];
+        int nbrTrouver = 0;
+        int i = 0;
+        while(nbrTrouver<2 && i<length(ligne)){
+            if(charAt(ligne, i)==symbol){
+                listePosition[nbrTrouver] = i;
+                nbrTrouver++;
+            }
+            i++;
+        }
+        return listePosition;
+    }
+
+        /* integrerPrenomsJCJ permet d'insérer les prénoms des joueurs dans la ligne du GUI JCJ par une succéssion de substring */
+
+    String integrerPrenomsJCJ(String ligne, int[] positions, String premierPrenom, String deuxiemePrenom){
+        String premierEspace = substring(ligne, positions[0]-20, positions[0]);     // On récupère la zone de prénom du premier Joueur.
+        String deuxiemeEspace = substring(ligne, positions[1]-20, positions[1]);    // On récupère la zone de prénom du deuxième Joueur.
+        String partieGauche = substring(ligne, 0, positions[0]-20);                 // On récupère la partie à gauche de la ligne.
+        String partieCentrale = substring(ligne, positions[0]+1, positions[1]-20);  // On récupère la partie entre les deux zones de prénom.
+        String partieDroite = substring(ligne, positions[1]+1, length(ligne));      // On récupère la partie à droite de la ligne.
+        return (partieGauche + completerVide(premierEspace, premierPrenom+":" ,1)+ partieCentrale +" "+ completerVide(deuxiemeEspace, deuxiemePrenom+":" ,1) +" "+ partieDroite);
+    }
+
+    String integrerViesJCJ(String ligne, int[] positions, String premierVie, String deuxiemeVie){
+        String partieGauche = substring(ligne, 0, positions[0]+2);
+        String partieCentrale = substring(ligne, positions[0]+3, positions[1]+2);
+        String partieDroite = substring(ligne, positions[1]+3, length(ligne));
+        return (partieGauche + premierVie + partieCentrale + deuxiemeVie + partieDroite);
+    }
+
+    String integrerScoreJCJ(String ligne, int[] positions, String premierScore, String deuxiemeScore){
+        String partieGauche = substring(ligne, 0, positions[0]+2);
+        String partieCentrale = substring(ligne, positions[0]+3, positions[1]+2);
+        String partieDroite = substring(ligne, positions[1]+3, length(ligne));
+        return (partieGauche + premierScore + partieCentrale + deuxiemeScore + partieDroite);
+    }
+
+        /* connectionUtilisateur permet de retourner les identifiants de l'utilisateur sois en se connectant ou en créant un nouveau compte */
+
+    Utilisateur connectionUtilisateur(Utilisateur[] listeDesUtilisateurs){
+        String[] GUI = initialiserMenuConnection(listeDesUtilisateurs);// On initialise me menu dans une table de String. 
+        affichage(GUI);
+        println();
+        print("Entre le numéro de ton compte : ");
+        int choix = readInt();
+        Utilisateur user = new Utilisateur();
+        if(choix==0){
+
+        }
+        else{
+            user = listeDesUtilisateurs[choix-1];
+        }
+        return user;
+    }
+
+    String[] initialiserMenuConnection(Utilisateur[] listeDesUtilisateurs){
+        String[] hautMenu = initialiseStringTable("hautMenuConnectionSession");
+        String[] basMenu = initialiseStringTable("menuConnectionSession");
+        String[] GUI = creerMenuConnection(hautMenu, basMenu, listeDesUtilisateurs);
+        return GUI;
+    }
+
+    String[] creerMenuConnection(String[] hautMenu, String[] basMenu, Utilisateur[] listeDesUtilisateurs){
+        basMenu = insererIdentifiantsBasMenu(basMenu, listeDesUtilisateurs);
+        String[] GUI = new String[length(hautMenu)+length(basMenu)];
+        int index = 0;
+        for(int i=0; i<length(hautMenu); i++){
+            GUI[index]=hautMenu[i];
+            index++;
+        }
+        for(int i=0; i<length(basMenu); i++){
+            GUI[index]=basMenu[i];
+            index++;
+        }
+        return GUI;
+    }
+
+    String[] insererIdentifiantsBasMenu(String[] basMenu, Utilisateur[] listeDesUtilisateurs){
+        int nombreIdentifiants = length(listeDesUtilisateurs);
+        if(nombreIdentifiants==0){
+            String ligne = basMenu[6];
+            int[] positions = chercheEmplacementReperes(ligne, '║');
+            String partieGauche = substring(ligne, 0, positions[0]);
+            String espaces = substring(ligne, positions[0]+1, positions[1]-1);
+            String partieDroite = substring(ligne, positions[1], length(ligne));
+            espaces = completerVide(espaces, "Aucune session n'a encore été créer.", 1);
+            basMenu[6] = (partieGauche + espaces + partieDroite);
+        }
+        else if(nombreIdentifiants>=1 && nombreIdentifiants<14){
+            for(int i=0; i<nombreIdentifiants; i++){
+                String ligne = basMenu[i+2];
+                println(i);
+                println(nombreIdentifiants);
+                basMenu[i+2] = insererIdentifiantsLigneMenu(ligne, listeDesUtilisateurs[i]);
+            }
+        }
+        return basMenu;
+    }
+
+    String insererIdentifiantsLigneMenu(String ligne, Utilisateur user){
+        int limite = chercheNouveauCharactere(ligne);
+        String finLigne = substring(ligne, limite, length(ligne));
+        String Id = completerVide("  ", intToString(user.id), 2);
+        String prenom = completerVide("                     ", user.prenom, 0);
+        String nom = completerVide("                     ", user.nom, 0);
+        String classe = completerVide("       ", user.classe, 0);
+        return ("║ "+ Id +" "+ prenom +" "+ nom +" "+ classe +" "+ finLigne);
+    }
+
+    int chercheNouveauCharactere(String ligne){
+        int res = 1;
+        boolean trouver = false;
+        while(!trouver && res<length(ligne)){
+            if(charAt(ligne, res)!=' '){
+                trouver = true;
+            }
+            res++;
+        }
+        return res-1;
     }
 
     void algorithm(){
@@ -499,57 +707,83 @@ int stringEnInt(String nbr){
         boolean quitter = false;
         boolean estConnecter = false;
         boolean identifier = false;
-        String[] identifiants = new String[]{"0","","","","5","0"};
-        Utilisateur user = initialiserUtilisateur(identifiants);
+        Utilisateur[] listeDesUtilisateurs = initialiserListeUtilisateur(idList);
+        Utilisateur user = new Utilisateur();
         
         while(!quitter){ // Tant que l'on n'a pas demandé de quitter.
-            if(possèdeSession()){ // Si on a une session.
-                identifier = false;
-                do{
-                    identifiants = recupererIdentifiants(idList, true);
-                    if(identifiantExiste(idList, identifiants)){ // Si les identifiants existent, on initialise le type Utilisateur.
-                        int ligneId = trouverNumLigneId(idList, identifiants);
-                        identifiants[0] = intToString(ligneId-1);
-                        identifiants[4] = idList[ligneId][4];
-                        identifiants[5] = idList[ligneId][5];
-                        identifier = true;
-                        println("Identifiants corrects !");
-                        user = initialiserUtilisateur(identifiants);
-                        estConnecter = true;
-                    }
+            //if(possèdeSession()){ // Si on a une session.
+            //    identifier = false;
+            //    do{
+            //        identifiants = recupererIdentifiants();
+            //        if(identifiantExiste(idList, identifiants)){ // Si les identifiants existent, on initialise le type Utilisateur.
+            //            int ligneId = trouverNumLigneId(idList, identifiants);
+            //            identifiants[0] = intToString(ligneId-1);
+            //            identifiants[4] = idList[ligneId][4];
+            //            identifiants[5] = idList[ligneId][5];
+            //            identifiants[6] = idList[ligneId][6];
+            //            identifiants[7] = idList[ligneId][7];
+            //            identifiants[8] = idList[ligneId][8];
+            //            identifiants[9] = idList[ligneId][9];
+            //            identifiants[10] = idList[ligneId][10];
+            //            identifiants[11] = idList[ligneId][11];
+            //            identifiants[12] = idList[ligneId][12];
+            //            identifiants[13] = idList[ligneId][13];
+            //            identifier = true;
+            //            println("Identifiants corrects !");
+            //            user = initialiserUtilisateur(identifiants);
+            //            estConnecter = true;
+            //        }
+            //
+            //    }while(!identifier);
+            //}
+            //else{ // Si on n'en a pas.
+            //    identifier = false;
+            //    do{
+            //        identifiants = recupererIdentifiants(); // On récupère les nouveaux identifiants
+            //        if(!identifiantExiste(idList, identifiants)){ // Si les identifiants n'existent pas déjà, on les rajoutent aux sauvegardes
+            //            identifiants[0] = intToString(trouverNumLigneId(idList ,identifiants));
+            //            identifiants[4] = "5";
+            //            identifiants[5] = "0";
+            //            identifiants[6] = "0";
+            //            identifiants[7] = "0";
+            //            identifiants[8] = "0";
+            //            identifiants[9] = "0";
+            //            identifiants[10] = "0";
+            //            identifiants[11] = "0";
+            //            identifiants[12] = "0";
+            //            identifiants[13] = "0";
+            //            identifier = true;
+            //            idList = insererNouveauxIdentifiants(idList, identifiants); // On rejoute à la sauvegarde les nouveaux identifiants
+            //            println("Identifiants enreistrés avec succès !");
+            //            user = initialiserUtilisateur(identifiants);
+            //            estConnecter = true;
+            //        }
+            //    }while(!identifier); // Tant que l'on ne s'est pas identifié
+            //
+            //}
 
-                }while(!identifier);
-            }
-            else{ // Si on n'en a pas.
-                identifier = false;
-                do{
-                    identifiants = recupererIdentifiants(idList, false); // On récupère les nouveaux identifiants
-                    if(!identifiantExiste(idList, identifiants)){ // Si les identifiants n'existent pas déjà, on les rajoutent aux sauvegardes
-                        identifiants[0] = intToString(trouverNumLigneId(idList ,identifiants));
-                        identifiants[4] = "5";
-                        identifiants[5] = "0";
-                        identifier = true;
-                        idList = insererNouveauxIdentifiants(idList, identifiants); // On rejoute à la sauvegarde les nouveaux identifiants
-                        println("Identifiants enreistrés avec succès !");
-                        user = initialiserUtilisateur(identifiants);
-                        estConnecter = true;
-                    }
-                }while(!identifier); // Tant que l'on ne s'est pas identifié
 
+          
+            while(!estConnecter){
+                user = connectionUtilisateur(listeDesUtilisateurs);
+                estConnecter=true;
             }
 
             while(estConnecter && !quitter){ // Tant que l'on est connecté
                 int choix = choixMenu();
                 if(choix==1){
-                    lancerJeu1(user, identifiants); // jeu numéro 1
-                    for(int i=0; i<length(identifiants); i++){          
-                        idList[length(idList, 1)-1][i] = identifiants[i];
-                    }
-                    saveCSV(idList, NOM_REPERTOIRE +"/ComptesEnregistrés.csv");
+                    user = lancerJeu1(user); // jeu numéro 1
                 }
                 else if(choix==2){
                 }
                 else if(choix==3){
+                   // String[] identifiantsDeuxiemeJoueur = recupererIdentifiants();
+                   // Utilisateur deuxiemeUser = initialiserUtilisateur(identifiantsDeuxiemeJoueur);
+                   // lancerJCJ(user, deuxiemeUser);
+                   // //for(int i=0; i<length(identifiants); i++){          
+                   // //    idList[stringEnInt(identifiants[0])][i] = identifiants[i];
+                   // //}
+                   // //saveCSV(idList, NOM_REPERTOIRE +"/ComptesEnregistrés.csv");
                 }
                 else if(choix==4){
                 }
