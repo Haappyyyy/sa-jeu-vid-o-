@@ -356,19 +356,12 @@ class HelloWord extends Program{
         return i;
     }
 
-    void lancerJeu1(Utilisateur user, String[] save){
+    Utilisateur lancerJeu1(Utilisateur user){
         CSVFile voc = loadCSV("../ressources/voc.csv");
         Mot[] allWords = new Mot[rowCount(voc)];
         loadWords(allWords, voc);
-        //Utilisateur user = new Utilisateur();                 \
-        //println("Bonjour! Quel est ton nom?");                 |
-        //user.prenom=readString();                              |
-        //println("Dans quel niveau d'enseignement es-tu?");     |  Incorporer dans le void algorithm
-        //println("1-CE2");                                      |  Mit en paramètre de la fonction lanceJeu1
-        //println("2-CM1");                                      |
-        //println("3-CM2");                                      |
-        //user.niveau=readString();                             /
-        Traduction(allWords,user,save);
+        user = Traduction(allWords,user);
+        return user;
     }
 
     Mot newMot(String motFr, String motEn){
@@ -388,7 +381,7 @@ class HelloWord extends Program{
         return random() < 0.5;
     }
 
-    boolean Traduction(Mot[] words,Utilisateur user, String[] save){
+    Utilisateur Traduction(Mot[] words,Utilisateur user){
         boolean recommencer=true;
         boolean gagné= false;
         while(recommencer){
@@ -475,13 +468,11 @@ class HelloWord extends Program{
             user.premierjeu_vies=5;
         }
         else if(question==2){
-            save[4]=intToString(user.premierjeu_vies);
-            save[5]=intToString(user.premierjeu_victoires);
             recommencer=false;
         }
         
     }
-    return gagné;
+    return user;
 }
 
 String intToString(int nbr){
@@ -706,14 +697,9 @@ int stringEnInt(String nbr){
                 estConnecter=true;
             }
             while(estConnecter && !quitter){ // Tant que l'on est connecté
-                println("entre dans le jeu");
                 int choix = choixMenu();
                 if(choix==1){
-                    lancerJeu1(user, identifiants); // jeu numéro 1
-                    for(int i=0; i<length(identifiants); i++){          
-                        idList[length(idList, 1)-1][i] = identifiants[i];
-                    }
-                    saveCSV(idList, NOM_REPERTOIRE +"/ComptesEnregistrés.csv");
+                    user = lancerJeu1(user); // jeu numéro 1
                 }
                 else if(choix==2){
                 }
