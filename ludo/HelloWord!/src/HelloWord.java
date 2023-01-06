@@ -56,6 +56,7 @@ class HelloWord extends Program{
 
     String[] recupererTableSimple(String[][] idList, int ligne){
         String[] identifiants = new String[length(idList, 2)];
+        println(length(idList, 2));
         for(int i=0; i<length(identifiants); i++){
             identifiants[i] = idList[ligne][i];
         }
@@ -302,10 +303,11 @@ class HelloWord extends Program{
         return nouvelIdList; // On retourne la nouvelle table.
     }
 
-    Utilisateur[] initialiserListeUtilisateur(String[][] idList){
-        Utilisateur[] listeDesUtilisateurs = new Utilisateur[length(idList, 1)];
-        if(length(idList, 1)>1){
+    Utilisateur[] initialiserListeUtilisateur(String[][] idList){  
+        Utilisateur[] listeDesUtilisateurs = new Utilisateur[length(idList, 1)-1];
+        if((length(idList, 1)-1)>0){
             for(int i=1; i<length(idList, 1); i++){
+                println("idlist, i "+ i);
                 listeDesUtilisateurs[i-1] = initialiserUtilisateur(recupererTableSimple(idList, i));
             }
         }
@@ -595,9 +597,18 @@ int stringEnInt(String nbr){
         /* connectionUtilisateur permet de retourner les identifiants de l'utilisateur sois en se connectant ou en créant un nouveau compte */
 
     Utilisateur connectionUtilisateur(Utilisateur[] listeDesUtilisateurs){
-        String[] GUI = initialiserMenuConnection(listeDesUtilisateurs);
-        Utilisateur user = listeDesUtilisateurs[0];
+        String[] GUI = initialiserMenuConnection(listeDesUtilisateurs);// On initialise me menu dans une table de String. 
         affichage(GUI);
+        println();
+        print("Entre le numéro de ton compte : ");
+        int choix = readInt();
+        Utilisateur user = new Utilisateur();
+        if(choix==0){
+
+        }
+        else{
+            user = listeDesUtilisateurs[choix-1];
+        }
         return user;
     }
 
@@ -625,7 +636,7 @@ int stringEnInt(String nbr){
 
     String[] insererIdentifiantsBasMenu(String[] basMenu, Utilisateur[] listeDesUtilisateurs){
         int nombreIdentifiants = length(listeDesUtilisateurs);
-        if(nombreIdentifiants==1){
+        if(nombreIdentifiants==0){
             String ligne = basMenu[6];
             int[] positions = chercheEmplacementReperes(ligne, '║');
             String partieGauche = substring(ligne, 0, positions[0]);
@@ -634,9 +645,11 @@ int stringEnInt(String nbr){
             espaces = completerVide(espaces, "Aucune session n'a encore été créer.", 1);
             basMenu[6] = (partieGauche + espaces + partieDroite);
         }
-        else if(nombreIdentifiants>1 && nombreIdentifiants<14){
+        else if(nombreIdentifiants>=1 && nombreIdentifiants<14){
             for(int i=0; i<nombreIdentifiants; i++){
                 String ligne = basMenu[i+2];
+                println(i);
+                println(nombreIdentifiants);
                 basMenu[i+2] = insererIdentifiantsLigneMenu(ligne, listeDesUtilisateurs[i]);
             }
         }
@@ -646,11 +659,10 @@ int stringEnInt(String nbr){
     String insererIdentifiantsLigneMenu(String ligne, Utilisateur user){
         int limite = chercheNouveauCharactere(ligne);
         String finLigne = substring(ligne, limite, length(ligne));
-        println(user.id);
         String Id = completerVide("  ", intToString(user.id), 2);
-        String prenom = completerVide("                    ", user.prenom, 1);
-        String nom = completerVide("                    ", user.nom, 1);
-        String classe = user.classe;
+        String prenom = completerVide("                     ", user.prenom, 0);
+        String nom = completerVide("                     ", user.nom, 0);
+        String classe = completerVide("       ", user.classe, 0);
         return ("║ "+ Id +" "+ prenom +" "+ nom +" "+ classe +" "+ finLigne);
     }
 
