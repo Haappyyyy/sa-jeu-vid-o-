@@ -108,7 +108,7 @@ class HelloWord extends Program{
         String[] GUI = initialiseStringTable("ConnectionSession");
         String prenom = "";
         String nom = "";
-        String niveau = "";
+        String classe = "";
         String reponse;
         boolean identifiantsCorrects = false;
         while(!identifiantsCorrects){
@@ -130,9 +130,9 @@ class HelloWord extends Program{
                 affichage(GUI);
                 println();
                 print("Entre ta classe : ");
-                niveau = readString();
-            }while(!classeCorrecte(niveau));
-            metAJourGUI(GUIOriginal, GUI, niveau, 2); //2=zone de classe
+                classe = readString();
+            }while(!classeCorrecte(classe));
+            metAJourGUI(GUIOriginal, GUI, classe, 2); //2=zone de classe
             do{
                 affichage(GUI);
                 println();
@@ -143,7 +143,7 @@ class HelloWord extends Program{
                 identifiantsCorrects = true;
             }
         }
-        String[] identifiants = new String[]{"0",prenom, nom, niveau, "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"};
+        String[] identifiants = new String[]{"0",prenom, nom, classe, "5", "0", "0", "0", "0", "0", "0", "0", "0", "0"};
         
         return identifiants;
     }
@@ -596,7 +596,7 @@ int stringEnInt(String nbr){
 
         /* connectionUtilisateur permet de retourner les identifiants de l'utilisateur sois en se connectant ou en créant un nouveau compte */
 
-    Utilisateur connectionUtilisateur(Utilisateur[] listeDesUtilisateurs){
+    Utilisateur connectionUtilisateur(Utilisateur[] listeDesUtilisateurs, String[][] idList){
         String[] GUI = initialiserMenuConnection(listeDesUtilisateurs);// On initialise me menu dans une table de String. 
         affichage(GUI);
         println();
@@ -604,7 +604,18 @@ int stringEnInt(String nbr){
         int choix = readInt();
         Utilisateur user = new Utilisateur();
         if(choix==0){
+            boolean identifier = false;
+            do{
+                String[] identifiants = recupererIdentifiants(); // On récupère les nouveaux identifiants
+                if(!identifiantExiste(idList, identifiants)){ // Si les identifiants n'existent pas déjà, on les rajoutent aux sauvegardes
+                    user = initialiserUtilisateur(identifiants);
+                    identifier = true;
+                    idList = insererNouveauxIdentifiants(idList, identifiants); // On rejoute à la sauvegarde les nouveaux identifiants
+                    println("Identifiants enreistrés avec succès !");
+                    user = initialiserUtilisateur(identifiants);
 
+                }
+            }while(!identifier);
         }
         else{
             user = listeDesUtilisateurs[choix-1];
@@ -650,7 +661,7 @@ int stringEnInt(String nbr){
                 String ligne = basMenu[i+2];
                 println(i);
                 println(nombreIdentifiants);
-                basMenu[i+2] = insererIdentifiantsLigneMenu(ligne, listeDesUtilisateurs[i]);
+                basMenu[i] = insererIdentifiantsLigneMenu(ligne, listeDesUtilisateurs[i]);
             }
         }
         return basMenu;
@@ -686,65 +697,16 @@ int stringEnInt(String nbr){
         boolean estConnecter = false;
         boolean identifier = false;
         Utilisateur[] listeDesUtilisateurs = initialiserListeUtilisateur(idList);
-        Utilisateur user;
+        Utilisateur user = new Utilisateur();
         
         while(!quitter){ // Tant que l'on n'a pas demandé de quitter.
-            //if(possèdeSession()){ // Si on a une session.
-            //    identifier = false;
-            //    do{
-            //        identifiants = recupererIdentifiants();
-            //        if(identifiantExiste(idList, identifiants)){ // Si les identifiants existent, on initialise le type Utilisateur.
-            //            int ligneId = trouverNumLigneId(idList, identifiants);
-            //            identifiants[0] = intToString(ligneId-1);
-            //            identifiants[4] = idList[ligneId][4];
-            //            identifiants[5] = idList[ligneId][5];
-            //            identifiants[6] = idList[ligneId][6];
-            //            identifiants[7] = idList[ligneId][7];
-            //            identifiants[8] = idList[ligneId][8];
-            //            identifiants[9] = idList[ligneId][9];
-            //            identifiants[10] = idList[ligneId][10];
-            //            identifiants[11] = idList[ligneId][11];
-            //            identifiants[12] = idList[ligneId][12];
-            //            identifiants[13] = idList[ligneId][13];
-            //            identifier = true;
-            //            println("Identifiants corrects !");
-            //            user = initialiserUtilisateur(identifiants);
-            //            estConnecter = true;
-            //        }
-            //
-            //    }while(!identifier);
-            //}
-            //else{ // Si on n'en a pas.
-            //    identifier = false;
-            //    do{
-            //        identifiants = recupererIdentifiants(); // On récupère les nouveaux identifiants
-            //        if(!identifiantExiste(idList, identifiants)){ // Si les identifiants n'existent pas déjà, on les rajoutent aux sauvegardes
-            //            identifiants[0] = intToString(trouverNumLigneId(idList ,identifiants));
-            //            identifiants[4] = "5";
-            //            identifiants[5] = "0";
-            //            identifiants[6] = "0";
-            //            identifiants[7] = "0";
-            //            identifiants[8] = "0";
-            //            identifiants[9] = "0";
-            //            identifiants[10] = "0";
-            //            identifiants[11] = "0";
-            //            identifiants[12] = "0";
-            //            identifiants[13] = "0";
-            //            identifier = true;
-            //            idList = insererNouveauxIdentifiants(idList, identifiants); // On rejoute à la sauvegarde les nouveaux identifiants
-            //            println("Identifiants enreistrés avec succès !");
-            //            user = initialiserUtilisateur(identifiants);
-            //            estConnecter = true;
-            //        }
-            //    }while(!identifier); // Tant que l'on ne s'est pas identifié
-            //
-            //}
-
-            user = connectionUtilisateur(listeDesUtilisateurs);
             String[] identifiants = new String[]{"0","Ludovic", "Bernard", "CM2", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"};
-            quitter = true;
-
+            while(!estConnecter){
+                user = connectionUtilisateur(listeDesUtilisateurs, idList);
+                estConnecter=true;
+            }
             while(estConnecter && !quitter){ // Tant que l'on est connecté
+                println("entre dans le jeu");
                 int choix = choixMenu();
                 if(choix==1){
                     lancerJeu1(user, identifiants); // jeu numéro 1
