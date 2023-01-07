@@ -284,14 +284,21 @@
             for(int i=0; i<length(id); i++){//                                  \
                 idList[length(idList, 1)-1][i] = id[i];//                        | Une boucle for pour incorporer le nouveau type utilisateur passé en paramètre aux sauvegardes//    |
             }//                                                                 /
-            idList[length(idList, 1)-1][0] = intToString(length(idList, 1)-1);// On Crée et inére un nouvel Id.
+            //idList[length(idList, 1)-1][0] = intToString(length(idList, 1));// On Crée et insére un nouvel Id.
             saveCSV(idList, NOM_REPERTOIRE +"/ComptesEnregistrés.csv");// On sauvegarde.
             return idList;
         }
 
-        void sauvegarderUtilisateur(Utilisateur user, String[][] idList){
+        String[][] sauvegarderUtilisateur(Utilisateur user, String[][] idList){
+            if(user.id==length(idList, 1)){
+                idList = ajouterLigne(idList);
+                idList[user.id][0] = intToString(user.id);
+                idList[user.id][1] = user.prenom;
+                idList[user.id][2] = user.nom;
+                idList[user.id][3] = user.classe;
+            }
             idList[user.id][4] = intToString(user.premierjeu_vies);
-            idList[user.id][5] = intToString(user.premierjeu_victoires);
+            idList[user.id][5] = intToString(user.premierjeu_score);
             idList[user.id][6] = intToString(user.premierjeu_parties_gagner);
             idList[user.id][7] = intToString(user.premierjeu_parties_perdu);
             idList[user.id][8] = intToString(user.premierjeu_mots_traduits);
@@ -301,6 +308,7 @@
             idList[user.id][12] = intToString(user.JCJ_manche_perdu);
             idList[user.id][13] = intToString(user.JCJ_mots_traduits);
             saveCSV(idList, NOM_REPERTOIRE +"/ComptesEnregistrés.csv");
+            return idList;
         }
 
             /* ajouterLigne permet d'agrandir une table d'une ligne. Utile pour sauvegarder un nouvel utilisateur. */
@@ -309,18 +317,19 @@
             String[][] nouvelIdList = new String[length(idList,1)+1][length(idList, 2)]; // On créer une nouvelle table d'une ligne supplémentaire.
             for(int i=0; i<length(idList, 1); i++){//      \
                 for(int j=0; j<length(idList, 2); j++){//   |  
-                    println(idList[i][j]);//                | Deux boucles for pour remplir la nouvelle table 2 dimensions depuis l'ancienne.
+                    //println(idList[i][j]);//                | Deux boucles for pour remplir la nouvelle table 2 dimensions depuis l'ancienne.
                     nouvelIdList[i][j] = idList[i][j];//    |
                 }//                                        /
             }
-            return nouvelIdList; // On retourne la nouvelle table.
+            idList = nouvelIdList;
+            return idList; // On retourne la nouvelle table.
         }
 
         Utilisateur[] initialiserListeUtilisateur(String[][] idList){  
             Utilisateur[] listeDesUtilisateurs = new Utilisateur[length(idList, 1)-1];
             if((length(idList, 1)-1)>0){
                 for(int i=1; i<length(idList, 1); i++){
-                    println("idlist, i "+ i);
+                    //println("idlist, i "+ i);
                     listeDesUtilisateurs[i-1] = initialiserUtilisateur(recupererTableSimple(idList, i));
                 }
             }
@@ -334,7 +343,7 @@
             user.nom = identifiants[2];
             user.classe = identifiants[3];
             user.premierjeu_vies = stringEnInt(identifiants[4]);
-            user.premierjeu_victoires = stringEnInt(identifiants[5]);
+            user.premierjeu_score = stringEnInt(identifiants[5]);
             user.premierjeu_parties_gagner = stringEnInt(identifiants[6]);
             user.premierjeu_parties_perdu = stringEnInt(identifiants[7]);
             user.premierjeu_mots_traduits = stringEnInt(identifiants[8]);
@@ -351,11 +360,11 @@
             boolean trouver = false;
             int i = 0;
             while(!trouver && i<length(idList, 1)){         // Boucle while qui redémare tant qu'elle n'est pas arrivée à la fin de la liste ou qu'elle n'a pas trouvée de doublon.
-                println(idList[i][1]);
+                //println(idList[i][1]);
                 if(equals(idList[i][1], id[1])){            // Première condition qui vérifie si un prénom déjà enregistré est égal à celui du nouvel identifiant.
-                    println(idList[i][2]);
+                    //println(idList[i][2]);
                     if(equals(idList[i][2], id[2])){        // Deuxième condition qui vérifie si un nom déjà enregistré est égal à celui du nouvel identifiant en plus du prénom.
-                        println(idList[i][3]);
+                        //println(idList[i][3]);
                         if(equals(idList[i][3], id[3])){    // Troisième condition qui vérifie, dans le cas où le nom et prénom sont égaux à ceux du nouvel identifiant, si ils sont de la même classe.                        
                             trouver = true;
                         }
@@ -365,9 +374,13 @@
                     i++;
                 }
             }
-            println(i);
+            //println(i);
             return i;
         }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////Debut jeu traduction///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         Utilisateur lancerJeu1(Utilisateur user){
             CSVFile voc = loadCSV("../ressources/voc.csv");
@@ -399,17 +412,18 @@
             boolean recommencer=true;
             boolean gagné= false;
             while(recommencer){
-                GUI = maj_GUI_JeuTraduction(GUI, user);
+                GUI = MAJ_GUI_JeuTraduction(GUI, user);
+                affichage(GUI);
                 Mot motactuel;
                 String reponse="";
                 int question=0;
                 boolean quitter=false;
                 if (!choixlangue()){
-                while (user.premierjeu_vies>0 && !(user.premierjeu_victoires==5) && !quitter){
+                while (user.premierjeu_vies>0 && !(user.premierjeu_score==5) && !quitter){
                     motactuel = words[(int)(random()*length(words,1))];
                     println();
                     print(user.premierjeu_vies + " ");
-                    print(user.premierjeu_victoires + " ");
+                    print(user.premierjeu_score + " ");
                     println("Trouve la traduction en français de " + "\"" + motactuel.moten + "\"" );
                     println();
                     println("Pour quitter le jeu appuie sur 2");
@@ -418,8 +432,8 @@
                     if (equals(reponse, motactuel.motfr)){
                         println();
                         println("Bravo tu as trouvé!");
-                        user.premierjeu_victoires = user.premierjeu_victoires + 1;
-                        println("Tu as " + user.premierjeu_victoires + " " + "points");
+                        user.premierjeu_score = user.premierjeu_score + 1;
+                        println("Tu as " + user.premierjeu_score + " " + "points");
                         println();
                         
                     }
@@ -437,11 +451,11 @@
                 }
             }
             else {
-                while (user.premierjeu_vies>0 && !(user.premierjeu_victoires==5)&& !quitter){
+                while (user.premierjeu_vies>0 && !(user.premierjeu_score==5)&& !quitter){
                     motactuel = words[(int)(random()*length(words,1))];
                     println();
                     print(user.premierjeu_vies + " ");
-                    print(user.premierjeu_victoires + " ");
+                    print(user.premierjeu_score + " ");
                     println("Trouve la traduction en anglais de " + motactuel.motfr);
                     println();
                     println("Pour quitter le jeu appuie sur 2");
@@ -450,8 +464,8 @@
                     if (equals(reponse, motactuel.moten)){
                         println();
                         println("Bravo tu as trouvé!");
-                        user.premierjeu_victoires = user.premierjeu_victoires + 1;
-                        println("Tu as " + user.premierjeu_victoires + " " + "points");
+                        user.premierjeu_score = user.premierjeu_score + 1;
+                        println("Tu as " + user.premierjeu_score + " " + "points");
                         println();
                     }
                     else if(equals(reponse,"2")){
@@ -465,7 +479,7 @@
                     }
                 }
             }
-            if (user.premierjeu_victoires==5){
+            if (user.premierjeu_score==5){
                 println("Bravo tu as gagné le jeu!");
                 gagné = true;
             }
@@ -481,7 +495,7 @@
             question=readInt();
             if(question==1){
                 recommencer=true;
-                user.premierjeu_victoires=0;
+                user.premierjeu_score=0;
                 user.premierjeu_vies=5;
             }
             else if(question==2){
@@ -492,9 +506,60 @@
         return user;
     }
 
-    String[] maj_GUI_JeuTraduction(String[] GUI, Utilisateur user){
+    String[] MAJ_GUI_JeuTraduction(String[] GUI, Utilisateur user){
+        GUI = insererIdentifiantsJeuTraduction(GUI, user.prenom, user.nom, user.classe, intToString(user.premierjeu_vies), intToString(user.premierjeu_score));
         return GUI;
     }
+
+    String[] insererIdentifiantsJeuTraduction(String[] GUI, String prenom, String nom, String classe, String vies, String score){
+        GUI[1] = integrerPrenomJeuTraduction(GUI[1], prenom);
+        GUI[2] = integrerNomJeuTraduction(GUI[2], nom);
+        GUI[3] = integrerClasseJeuTraduction(GUI[3], classe);
+        GUI[2] = integrerViesJeuTraduction(GUI[2], vies);
+        GUI[3] = integrerScoreJeuTraduction(GUI[3], score);
+        return GUI;
+    }
+
+    String integrerPrenomJeuTraduction(String ligne, String prenom){
+        String partieGauche = substring(ligne, 0, 2);
+        String espace = substring(ligne, 2, 23);
+        String partieDroite = substring(ligne, 22, length(ligne));
+        return (partieGauche + completerVide(espace, prenom, 0) + partieDroite);
+    }
+
+    String integrerNomJeuTraduction(String ligne, String nom){
+        String partieGauche = substring(ligne, 0, 2);
+        String espace = substring(ligne, 2, 23);
+        String partieDroite = substring(ligne, 22, length(ligne));
+        return (partieGauche + completerVide(espace, nom, 0) + partieDroite);
+    }
+
+    String integrerClasseJeuTraduction(String ligne, String classe){
+        String partieGauche = substring(ligne, 0, 2);
+        String espace = substring(ligne, 2, 23);
+        String partieDroite = substring(ligne, 22, length(ligne));
+        return (partieGauche + completerVide(espace, classe, 0) + partieDroite);
+    }
+
+    String integrerViesJeuTraduction(String ligne, String vies){
+        int position = chercheEmplacementReperes(ligne, ':')[0]+1;
+        String partieGauche = substring(ligne, 0, position+1);
+        String espace = substring(ligne, position+1, position+3);
+        String partieDroite = substring(ligne, position+2, length(ligne));
+        return (partieGauche + completerVide(espace, vies, 0) + partieDroite);
+    }
+
+    String integrerScoreJeuTraduction(String ligne, String score){
+        int position = chercheEmplacementReperes(ligne, ':')[0]+1;
+        String partieGauche = substring(ligne, 0, position+1);
+        String espace = substring(ligne, position+1, position+5);
+        String partieDroite = substring(ligne, position+4, length(ligne));
+        return (partieGauche + completerVide(espace, score, 0) + partieDroite);
+    }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////Fin jeu traduction/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     String intToString(int nbr){
         String res = "";
@@ -516,7 +581,7 @@
 
         boolean Gagné(Utilisateur user){
             boolean g=false;
-            if(user.premierjeu_victoires==5){
+            if(user.premierjeu_score==5){
                 g=true;
             }
             return g;
@@ -618,13 +683,12 @@
             if(choix==0){
                 boolean identifier = false;
                 do{
-                    String[] identifiants = recupererIdentifiants(); // On récupère les nouveaux identifiants
-                    if(!identifiantExiste(idList, identifiants)){ // Si les identifiants n'existent pas déjà, on les rajoutent aux sauvegardes
-                        user = initialiserUtilisateur(identifiants);
-                        identifier = true;
-                        idList = insererNouveauxIdentifiants(idList, identifiants); // On rejoute à la sauvegarde les nouveaux identifiants
-                        println("Identifiants enregistrés avec succès !");
-                        sauvegarderUtilisateur(user, idList);
+                    String[] identifiants = recupererIdentifiants(); // On récupère les nouveaux identifiants.
+                    if(!identifiantExiste(idList, identifiants)){ // Si les identifiants n'existent pas déjà, on les rajoutent aux sauvegardes.
+                        identifiants[0]=intToString(length(idList, 1));// On crée et insère un tout nouvel id.
+                        //idList = insererNouveauxIdentifiants(idList, identifiants); // On rejoute à la sauvegarde les nouveaux identifiants.
+                        user = initialiserUtilisateur(identifiants);// On initialise enfin un type Utilisateur avec l'entièreté de ses données générés.
+                        identifier = true;// On confirme son identification
                     }
                 }while(!identifier);
             }
@@ -670,8 +734,6 @@
             else if(nombreIdentifiants>=1 && nombreIdentifiants<14){
                 for(int i=0; i<nombreIdentifiants; i++){
                     String ligne = basMenu[i];
-                    println(i);
-                    println(nombreIdentifiants);
                     basMenu[i] = insererIdentifiantsLigneMenu(ligne, listeDesUtilisateurs[i]);
                 }
             }
@@ -707,20 +769,21 @@
             boolean quitter = false;
             boolean estConnecter = false;
             boolean identifier = false;
-            Utilisateur[] listeDesUtilisateurs = initialiserListeUtilisateur(idList);
+            Utilisateur[] listeDesUtilisateurs;
             Utilisateur user = new Utilisateur();
             
             while(!quitter){ // Tant que l'on n'a pas demandé de quitter.
                 while(!estConnecter){
+                    listeDesUtilisateurs = initialiserListeUtilisateur(idList);
                     user = connectionUtilisateur(listeDesUtilisateurs, idList);
+                    idList = sauvegarderUtilisateur(user,idList); 
                     estConnecter=true;
-                    sauvegarderUtilisateur(user,idList);
                 }
                 while(estConnecter && !quitter){ // Tant que l'on est connecté
                     int choix = choixMenu();
                     if(choix==1){
                         user = lancerJeu1(user); // jeu numéro 1
-                        sauvegarderUtilisateur(user,idList);
+                        idList = sauvegarderUtilisateur(user,idList);
                     }
                     else if(choix==2){
                     }
@@ -728,7 +791,7 @@
                         String[] identifiantsDeuxiemeJoueur = recupererIdentifiants();
                         Utilisateur deuxiemeUser = initialiserUtilisateur(identifiantsDeuxiemeJoueur);
                         lancerJCJ(user, deuxiemeUser);
-                        sauvegarderUtilisateur(user,idList);
+                        idList = sauvegarderUtilisateur(user,idList);
                     }
                     else if(choix==4){
                     }
