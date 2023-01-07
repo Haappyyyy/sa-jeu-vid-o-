@@ -6,7 +6,7 @@ class Utilisateur {
     String classe;
     /*-------------------------------Stats premier jeu-------------------------------*/
     int premierjeu_vies = 5;
-    int premierjeu_victoires = 0;
+    int premierjeu_score = 0;
     int premierjeu_parties_gagner;
     int premierjeu_parties_perdu;
     int premierjeu_mots_traduits;
