@@ -161,25 +161,25 @@
         }
 
         void metAJourGUI(String[] GUIOriginal, String[] GUI, String chaine, int i){
-            if(i==0){
+            if(i==0){ // Condition pour positioner le prénom.
                 String ligne = GUIOriginal[1];
                 String debut = debutNouvelleSession(ligne);
                 String fin = finNouvelleSession(ligne, length(debut)-1);
-                String espaces = substring(ligne, length(debut)-1, (length(ligne)-length(fin)));
+                String espaces = substring(ligne, length(debut), (length(ligne)-length(fin)));
                 GUI[1] = debut + completerVide(espaces, chaine, 0) + fin;
             }
-            else if(i==1){
+            else if(i==1){// Condition pour positioner le nom.
                 String ligne = GUIOriginal[3];
                 String debut = debutNouvelleSession(ligne);
                 String fin = finNouvelleSession(ligne, length(debut)-1);
-                String espaces = substring(ligne, length(debut)-1, (length(ligne)-length(fin)));
+                String espaces = substring(ligne, length(debut), (length(ligne)-length(fin)));
                 GUI[3] = debut + completerVide(espaces, chaine, 0) + fin;
             }
-            else if(i==2){
+            else if(i==2){// Condition pour positioner la classe.
                 String ligne = GUIOriginal[5];
                 String debut = debutNouvelleSession(ligne);
                 String fin = finNouvelleSession(ligne, length(debut)-1);
-                String espaces = substring(ligne, length(debut)-1, (length(ligne)-length(fin)));
+                String espaces = substring(ligne, length(debut), (length(ligne)-length(fin)));
                 GUI[5] = debut + completerVide(espaces, chaine, 0) + fin;
             }
         }
@@ -210,7 +210,7 @@
 
         String completerVide(String espaces, String chaine, int position){
             if(position==0){// Condition pour position gauche.
-                espaces = substring(espaces, length(chaine)-1,length(espaces)-2);
+                espaces = substring(espaces, length(chaine)-1,length(espaces)-1);
                 return (chaine + espaces);
             }
             else if(position==1){// Condition pour position centrale
@@ -408,12 +408,11 @@
         }
 
         Utilisateur Traduction(Mot[] words,Utilisateur user){
-            String[] GUI = initialiseStringTable("menuJeuTraduction");
             boolean recommencer=true;
             boolean gagné= false;
             while(recommencer){
-                GUI = MAJ_GUI_JeuTraduction(GUI, user);
-                affichage(GUI);
+                String[] GUI = initialiseStringTable("menuJeuTraduction");
+                GUI = insererInformationsIdentifiantsJeuTraduction(GUI, user.prenom, user.nom, user.classe, intToString(user.premierjeu_vies), intToString(user.premierjeu_score));
                 Mot motactuel;
                 String reponse="";
                 int question=0;
@@ -421,12 +420,10 @@
                 if (!choixlangue()){
                 while (user.premierjeu_vies>0 && !(user.premierjeu_score==5) && !quitter){
                     motactuel = words[(int)(random()*length(words,1))];
+                    GUI = MAJ_AvanceJeuTraduction(GUI, "français", motactuel.moten);
+                    affichage(GUI);
                     println();
-                    print(user.premierjeu_vies + " ");
-                    print(user.premierjeu_score + " ");
-                    println("Trouve la traduction en français de " + "\"" + motactuel.moten + "\"" );
-                    println();
-                    println("Pour quitter le jeu appuie sur 2");
+                    print("Entre ta réponse : ");
                     reponse = readString();
                     clear();
                     if (equals(reponse, motactuel.motfr)){
@@ -453,12 +450,10 @@
             else {
                 while (user.premierjeu_vies>0 && !(user.premierjeu_score==5)&& !quitter){
                     motactuel = words[(int)(random()*length(words,1))];
+                    GUI = MAJ_AvanceJeuTraduction(GUI, "anglais", motactuel.motfr);
+                    affichage(GUI);
                     println();
-                    print(user.premierjeu_vies + " ");
-                    print(user.premierjeu_score + " ");
-                    println("Trouve la traduction en anglais de " + motactuel.motfr);
-                    println();
-                    println("Pour quitter le jeu appuie sur 2");
+                    print("Entre ta réponse : ");
                     reponse = readString();
                     clear();
                     if (equals(reponse, motactuel.moten)){
@@ -506,12 +501,7 @@
         return user;
     }
 
-    String[] MAJ_GUI_JeuTraduction(String[] GUI, Utilisateur user){
-        GUI = insererIdentifiantsJeuTraduction(GUI, user.prenom, user.nom, user.classe, intToString(user.premierjeu_vies), intToString(user.premierjeu_score));
-        return GUI;
-    }
-
-    String[] insererIdentifiantsJeuTraduction(String[] GUI, String prenom, String nom, String classe, String vies, String score){
+    String[] insererInformationsIdentifiantsJeuTraduction(String[] GUI, String prenom, String nom, String classe, String vies, String score){
         GUI[1] = integrerPrenomJeuTraduction(GUI[1], prenom);
         GUI[2] = integrerNomJeuTraduction(GUI[2], nom);
         GUI[3] = integrerClasseJeuTraduction(GUI[3], classe);
@@ -522,39 +512,61 @@
 
     String integrerPrenomJeuTraduction(String ligne, String prenom){
         String partieGauche = substring(ligne, 0, 2);
-        String espace = substring(ligne, 2, 23);
+        String espace = substring(ligne, 3, 23);
         String partieDroite = substring(ligne, 22, length(ligne));
         return (partieGauche + completerVide(espace, prenom, 0) + partieDroite);
     }
 
     String integrerNomJeuTraduction(String ligne, String nom){
         String partieGauche = substring(ligne, 0, 2);
-        String espace = substring(ligne, 2, 23);
+        String espace = substring(ligne, 3, 23);
         String partieDroite = substring(ligne, 22, length(ligne));
         return (partieGauche + completerVide(espace, nom, 0) + partieDroite);
     }
 
     String integrerClasseJeuTraduction(String ligne, String classe){
         String partieGauche = substring(ligne, 0, 2);
-        String espace = substring(ligne, 2, 23);
+        String espace = substring(ligne, 3, 23);
         String partieDroite = substring(ligne, 22, length(ligne));
         return (partieGauche + completerVide(espace, classe, 0) + partieDroite);
     }
 
     String integrerViesJeuTraduction(String ligne, String vies){
-        int position = chercheEmplacementReperes(ligne, ':')[0]+1;
+        int position = chercheEmplacementReperes(ligne, ':', 1)[0]+1;
         String partieGauche = substring(ligne, 0, position+1);
-        String espace = substring(ligne, position+1, position+3);
+        String espace = substring(ligne, position+2, position+3);
         String partieDroite = substring(ligne, position+2, length(ligne));
         return (partieGauche + completerVide(espace, vies, 0) + partieDroite);
     }
 
     String integrerScoreJeuTraduction(String ligne, String score){
-        int position = chercheEmplacementReperes(ligne, ':')[0]+1;
+        int position = chercheEmplacementReperes(ligne, ':', 1)[0]+1;
         String partieGauche = substring(ligne, 0, position+1);
-        String espace = substring(ligne, position+1, position+5);
+        String espace = substring(ligne, position+2, position+5);
         String partieDroite = substring(ligne, position+4, length(ligne));
         return (partieGauche + completerVide(espace, score, 0) + partieDroite);
+    }
+
+    String[] MAJ_AvanceJeuTraduction(String[] GUI, String langue, String mot){
+        GUI[8] = insererLangueJeuTraduction(GUI[8], langue);
+        GUI[11] = insererMotJeuTraduction(GUI[11], mot);
+        return GUI;
+    }
+
+    String insererLangueJeuTraduction(String ligne, String langue){
+        int position = chercheEmplacementReperes(ligne, ':', 1)[0]+1;
+        String partieGauche = substring(ligne, 0, position+1);
+        String espace = substring(ligne, position+2, position+10);
+        String partieDroite = substring(ligne, position+9, length(ligne));
+        return (partieGauche + completerVide(espace, langue, 0) + partieDroite);
+    }
+
+    String insererMotJeuTraduction(String ligne, String mot){
+        int position = chercheEmplacementReperes(ligne, '║', 3)[2];
+        String partieGauche = substring(ligne, 0, position+1);
+        String espace = substring(ligne, position+2, position+20);
+        String partieDroite = substring(ligne, position+19, length(ligne));
+        return (partieGauche + completerVide(espace, mot, 0) + partieDroite);
     }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -608,19 +620,19 @@
         String[] maj_GUI_JCJ(String[] GUI, int numLigne, String premierJoueur, String deuxiemeJoueur){
             if(numLigne==6){
                 String ligne = GUI[numLigne];                                                               //On récupère la ligne de prénom.
-                int[] positionReperes = chercheEmplacementReperes(ligne, ':');                                            //On récupère les positions des petits points.
+                int[] positionReperes = chercheEmplacementReperes(ligne, ':', 2);                                            //On récupère les positions des petits points.
                 ligne = integrerPrenomsJCJ(ligne, positionReperes, premierJoueur, deuxiemeJoueur);
                 GUI[numLigne] = ligne;
             }
             else if(numLigne==8){
                 String ligne = GUI[numLigne];                                                               //On récupère la ligne de prénom.
-                int[] positionReperes = chercheEmplacementReperes(ligne, ':');                                            //On récupère les positions des petits points.
+                int[] positionReperes = chercheEmplacementReperes(ligne, ':', 2);                                            //On récupère les positions des petits points.
                 ligne = integrerViesJCJ(ligne, positionReperes, premierJoueur, deuxiemeJoueur);
                 GUI[numLigne] = ligne;
             }
             else if(numLigne==9){
                 String ligne = GUI[numLigne];                                                               //On récupère la ligne de prénom.
-                int[] positionReperes = chercheEmplacementReperes(ligne, ':');                                            //On récupère les positions des petits points.
+                int[] positionReperes = chercheEmplacementReperes(ligne, ':', 2);                                            //On récupère les positions des petits points.
                 ligne = integrerScoreJCJ(ligne, positionReperes, premierJoueur, deuxiemeJoueur);
                 GUI[numLigne] = ligne;
             }
@@ -632,11 +644,11 @@
 
             /* chercherEmplacementPrenom permet de trouver l'emplacement des petits points dans la ligne en paramètre. Utile pour les interfaces JCJ. */
 
-        int[] chercheEmplacementReperes(String ligne, char symbol){
-            int[] listePosition = new int[2];
+        int[] chercheEmplacementReperes(String ligne, char symbol, int nbrReperes){
+            int[] listePosition = new int[nbrReperes];
             int nbrTrouver = 0;
             int i = 0;
-            while(nbrTrouver<2 && i<length(ligne)){
+            while(nbrTrouver<nbrReperes && i<length(ligne)){
                 if(charAt(ligne, i)==symbol){
                     listePosition[nbrTrouver] = i;
                     nbrTrouver++;
@@ -724,7 +736,7 @@
             int nombreIdentifiants = length(listeDesUtilisateurs);
             if(nombreIdentifiants==0){
                 String ligne = basMenu[6];
-                int[] positions = chercheEmplacementReperes(ligne, '║');
+                int[] positions = chercheEmplacementReperes(ligne, '║', 2);
                 String partieGauche = substring(ligne, 0, positions[0]);
                 String espaces = substring(ligne, positions[0]+1, positions[1]-1);
                 String partieDroite = substring(ligne, positions[1], length(ligne));
@@ -744,9 +756,9 @@
             int limite = chercheNouveauCharactere(ligne);
             String finLigne = substring(ligne, limite, length(ligne));
             String Id = completerVide("  ", intToString(user.id), 2);
-            String prenom = completerVide("                     ", user.prenom, 0);
-            String nom = completerVide("                     ", user.nom, 0);
-            String classe = completerVide("       ", user.classe, 0);
+            String prenom = completerVide("                    ", user.prenom, 0);
+            String nom = completerVide("                    ", user.nom, 0);
+            String classe = completerVide("      ", user.classe, 0);
             return ("║ "+ Id +" "+ prenom +" "+ nom +" "+ classe +" "+ finLigne);
         }
 
