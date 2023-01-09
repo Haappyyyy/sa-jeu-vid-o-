@@ -412,13 +412,13 @@
             boolean gagné= false;
             while(recommencer){
                 String[] GUI = initialiseStringTable("menuJeuTraduction");
-                GUI = insererInformationsIdentifiantsJeuTraduction(GUI, user.prenom, user.nom, user.classe, intToString(user.premierjeu_vies), intToString(user.premierjeu_score));
                 Mot motactuel;
                 String reponse="";
                 int question=0;
                 boolean quitter=false;
                 if (!choixlangue()){
                 while (user.premierjeu_vies>0 && !(user.premierjeu_score==5) && !quitter){
+                    GUI = insererInformationsIdentifiantsJeuTraduction(GUI, user.prenom, user.nom, user.classe, intToString(user.premierjeu_vies), intToString(user.premierjeu_score));
                     motactuel = words[(int)(random()*length(words,1))];
                     GUI = MAJ_AvanceJeuTraduction(GUI, "français", motactuel.moten);
                     affichage(GUI);
@@ -449,6 +449,7 @@
             }
             else {
                 while (user.premierjeu_vies>0 && !(user.premierjeu_score==5)&& !quitter){
+                    GUI = insererInformationsIdentifiantsJeuTraduction(GUI, user.prenom, user.nom, user.classe, intToString(user.premierjeu_vies), intToString(user.premierjeu_score));
                     motactuel = words[(int)(random()*length(words,1))];
                     GUI = MAJ_AvanceJeuTraduction(GUI, "anglais", motactuel.motfr);
                     affichage(GUI);
@@ -564,7 +565,7 @@
     String insererMotJeuTraduction(String ligne, String mot){
         int position = chercheEmplacementReperes(ligne, '║', 3)[2];
         String partieGauche = substring(ligne, 0, position+1);
-        String espace = substring(ligne, position+2, position+20);
+        String espace = "                  ";
         String partieDroite = substring(ligne, position+19, length(ligne));
         return (partieGauche + completerVide(espace, mot, 0) + partieDroite);
     }
