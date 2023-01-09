@@ -3,13 +3,13 @@
 ╠════════════════════════════════════════════════════╬══════════════════════════════════════════════════════════════════════╬════════════════════════════════════════════════════╣
 ║                                    :               ║                                                                      ║                                    :               ║
 ║           Vies  :             Score :              ║         Chacun votre tour, traduisez les mots qui apparaîtront       ║           Vies  :             Score :              ║
-╠════════════════════════════════════════════════════╣               dans votre case pour gagner des points !               ╠════════════════════════════════════════════════════╣
+╠════════════════════════════════════════════════════╣                dans votre case dans la langue demandée               ╠════════════════════════════════════════════════════╣
+║                                                    ║                       pour gagner des points !                       ║                                                    ║
 ║                                                    ║             Le premier à perdre toutes ses vies à perdu !            ║                                                    ║
 ║                                                    ║                                                                      ║                                                    ║
-║                                                    ║                                                                      ║                                                    ║
-║                                                    ║                                                                      ║                                                    ║
-║                                                    ║                                                                      ║                                                    ║
-║                                                    ║                                                                      ║                                                    ║
-║                                                    ║                                                                      ║                                                    ║
+║            Traduit le mot en :                     ║                Achetez des améliorations à l'aide de                 ║            Traduit le mot en :                     ║
+║               ╔════════════════════╗               ║          votre score pour simplifier votre gain de points !          ║               ╔════════════════════╗               ║
+║               ║                    ║               ║               Achetez des malus à l'aide de votre score              ║               ║                    ║               ║
+║               ╚════════════════════╝               ║         pour déjouer votre adversaire et remporté la partie !        ║               ╚════════════════════╝               ║
 ║                                                    ║                                                                      ║                                                    ║
 ╚════════════════════════════════════════════════════╩══════════════════════════════════════════════════════════════════════╩════════════════════════════════════════════════════╝
