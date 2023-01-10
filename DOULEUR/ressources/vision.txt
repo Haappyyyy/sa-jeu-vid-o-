@@ -1,0 +1,15 @@
+╔═════════════════════╦══════════════════════════════════════════════════════════════════════════════╦════════════════╗
+║                     ║        Gagne des points en traduisant correctement les mots                  ║                ║
+║                     ║              qui s'affichent dans la langue indiquée !                       ║   vies  :      ║
+║                     ║          Si tu parviens à avoir 5 points, tu gagnes !                        ║   score :      ║
+╠═════════════════════╣          En revanche, si tu perds toutes tes vies, tu perds !                ║                ║
+║ Liste de tes bonus: ║                                                                              ╚════════════════╣
+║                     ║                                                                                               ║
+║ -                   ║                                                                                               ║
+║                     ║     Traduit le mot dans la case ci-dessous en :                                               ║
+║ -                   ║                                                                                               ║
+║                     ║      ╔════════════════════╗════════════════════╗                                              ║
+║ -                   ║      ║                    ║                    ║                                              ║
+║                     ║      ╚════════════════════╝════════════════════╝               ╔══════════════════════════════╣
+║                     ║                                                                ║Entre "2" pour revenir au menu║
+╚═════════════════════╩════════════════════════════════════════════════════════════════╩══════════════════════════════╝

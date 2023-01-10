@@ -1,0 +1,130 @@
+
+        void initialiserBonus(Bonus[] listebonus){
+            listebonus[0].nom="Skip";
+            listebonus[1].nom="Flashback";
+            listebonus[2].nom="Vision";
+        }
+
+        Bonus bonusaleatoire(Utilisateur user,Bonus[] listebonus){
+            double nbr=random();
+            if (nbr<0.33){
+                listebonus[0].nombre= listebonus[0].nombre + 1;
+                return listebonus[0];
+            }
+            else if (nbr<0.66 && nbr>0.34){
+                listebonus[0].nombre= listebonus[0].nombre + 1;
+                return listebonus[1];
+            }
+            else {
+                listebonus[0].nombre= listebonus[0].nombre + 1;
+                return listebonus[2];
+            }
+
+        }
+
+        Utilisateur Traduction(Mot[] words,Utilisateur user){
+            boolean recommencer=true;
+            while(recommencer){
+                Mot motactuel;
+                String reponse="";
+                int indice=0;
+                int question=0;
+                boolean quitter=false;
+                Bonus[] bonuspremierjeu = new Bonus[3];
+                if (!choixlangue()){
+                while (user.premierjeu_vies>0 && !(user.premierjeu_victoires==5) && !quitter){
+                    motactuel = words[(int)(random()*length(words,1))];
+                    println();
+                    print(user.premierjeu_vies + " ");
+                    print(user.premierjeu_victoires + " ");
+                    println("Trouve la traduction en français de " + "\"" + motactuel.moten + "\"" );
+                    println();
+                    if(user.premierjeu_victoires>1 && length(user.listebonus)<6){
+                        println("Tu as débloqué un bonus! Appuie sur 3 pour voir ta liste de bonus.");
+                        user.listebonus[indice]=bonusaleatoire(user,bonuspremierjeu);
+                        indice=indice+1;
+                        
+                    }
+                    println("Pour quitter le jeu appuie sur 2");
+                    reponse = readString();
+                    clear();
+                    if (equals(reponse, motactuel.motfr)){
+                        println();
+                        println("Bravo tu as trouvé!");
+                        user.premierjeu_victoires = user.premierjeu_victoires + 1;
+                        println("Tu as " + user.premierjeu_victoires + " " + "points");
+                        println();
+                        
+                    }
+                    else if(equals(reponse,"2")){;
+                        println("A une prochaine fois!");
+                        quitter=true; 
+                    }
+                    else if(equals(reponse,"3")){
+                        clear();
+                        println(user.listebonus);
+                    }
+                    else {
+                        user.premierjeu_vies = user.premierjeu_vies - 1;
+                        println();
+                        println("C'est erroné. Il te reste " + user.premierjeu_vies + " " + "vies");
+                        println();
+                        
+                    }
+                }
+            }
+            else {
+                while (user.premierjeu_vies>0 && !(user.premierjeu_victoires==5)&& !quitter){
+                    motactuel = words[(int)(random()*length(words,1))];
+                    println();
+                    print(user.premierjeu_vies + " ");
+                    print(user.premierjeu_victoires + " ");
+                    println("Trouve la traduction en anglais de " + motactuel.motfr);
+                    println();
+                    println("Pour quitter le jeu appuie sur 2");
+                    reponse = readString();
+                    clear();
+                    if (equals(reponse, motactuel.moten)){
+                        println();
+                        println("Bravo tu as trouvé!");
+                        user.premierjeu_victoires = user.premierjeu_victoires + 1;
+                        println("Tu as " + user.premierjeu_victoires + " " + "points");
+                        println();
+                    }
+                    else if(equals(reponse,"2")){
+                        println("A une prochaine fois !");
+                        quitter=true;
+                    }
+                    else {
+                        user.premierjeu_vies = user.premierjeu_vies - 1;
+                        println("C'est erroné. Il te reste" + " " + user.premierjeu_vies + " " + "vies");
+                        println();
+                    }
+                }
+            }
+            if (user.premierjeu_victoires==5){
+                println("Bravo tu as gagné le jeu!");
+                
+            }
+            if (user.premierjeu_vies==0){
+                println("Dommage, tu as perdu.");
+                
+            }
+
+            println();
+            println("Veux-tu recommencer la partie?");
+            println("1. Oui");
+            println("2. Non");
+            question=readInt();
+            if(question==1){
+                recommencer=true;
+                user.premierjeu_victoires=0;
+                user.premierjeu_vies=5;
+            }
+            else if(question==2){
+                recommencer=false;
+            }
+            
+        }
+        return user;
+    }

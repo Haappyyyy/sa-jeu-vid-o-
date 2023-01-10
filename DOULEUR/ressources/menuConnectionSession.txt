@@ -1,0 +1,15 @@
+║                                                     ╠═════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║                                                     ║                                                                                                             ║
+║                                                     ║     Entre le numéro à gauche de tes identifiants une première fois pour séléctioner un compte               ║
+║                                                     ║     Entre le une deuxième fois pour confirmer que tu souhaites à accéder à ce compte                        ║
+║                                                     ║     Si le compte que tu as sélectionner n'est pas celui que tu souhaites, alors entre un autre numéro !     ║
+║                                                     ║                                                                                                             ║
+║                                                     ║     Entre "quitter" pour quitter le jeu                                                                     ║
+║                                                     ║                                                                                                             ║
+║                                                     ╠═════════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+║                                                     ║                                                                                                             ║
+║                                                     ║                                   Tu ne possèdes toujours pas de compte ??                                  ║
+║                                                     ║                                           Crée le dès maintenant !                                          ║
+║                                                     ║                                              Entre le numéro 0 !                                            ║
+║                                                     ║                                                                                                             ║
+╚═════════════════════════════════════════════════════╩═════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
