@@ -622,16 +622,11 @@
 
         Utilisateur[] lancerJCJ(Utilisateur premierJoueur, Utilisateur deuxiemeJoueur){
 
-            String[] GUI = initialiseStringTable("GUIJoueurContreJoueur");
-            GUI = initialiser_GUI_JCJ(GUI, premierJoueur, deuxiemeJoueur);
-            GUI = maj_GUI_JCJ(GUI, premierJoueur, deuxiemeJoueur);
-            affichage(GUI);
-            boolean recommencer = true;
-            boolean quitter = false;
-            boolean finiAmelioration = false;
-            boolean finiMalus = false;
-            int pointsAccorderPremierJoueur = 1;
-            int pointsAccorderDeuxiemeJoueur = 1;
+            partie.GUI = initialiseStringTable("GUIJoueurContreJoueur");
+            partie.GUI = initialiser_GUI_JCJ(partie.GUI, premierJoueur, deuxiemeJoueur);
+            partie.GUI = maj_GUI_JCJ(partie.GUI, premierJoueur, deuxiemeJoueur);
+            affichage(partie.GUI);
+            partieJCJ partie = initialiserPartieJCJ(partie.GUI, premierJoueur, deuxiemeJoueur);
             String langue;
             String reponse;
             String reponseAnalysee;
@@ -639,110 +634,18 @@
             Mot[] listeMots = loadWords();
             Mot motactuel;
             boolean tourFini = false;
-            while(recommencer){
-                premierJoueur.JCJ_score = 0;
-                deuxiemeJoueur.JCJ_score = 0;
+            while(partie.recommencer){
+                partie.premierJoueur.JCJ_score = 0;
+                partie.deuxiemeJoueur.JCJ_score = 0;
 
-                premierJoueur.JCJ_vies = 5;
-                deuxiemeJoueur.JCJ_vies = 5;
-                langue = choixlangue();
+                partie.premierJoueur.JCJ_vies = 5;
+                partie.deuxiemeJoueur.JCJ_vies = 5;
+                
                 while(premierJoueur.JCJ_vies>0 && deuxiemeJoueur.JCJ_vies>0 && !quitter){
-                    GUI = MAJ_InfoJeuJCJ(GUI, premierJoueur, deuxiemeJoueur);
-                    motactuel = listeMots[(int)(random()*length(listeMots,1))];
-                    tourFini = false;
-                    while(!tourFini){
-                        GUI = MAJ_AvanceJCJ(GUI, motactuel, langue, 1);
-                        do{
-                            affichage(GUI);
-                            println();
-                            print("Entre ta réponse : ");
-                            reponse = readString();
-                        }while(!reponseNonvide(reponse));
-                        if(equals(reponse, "0")){// quitter
-                            tourFini = true;
-                            quitter = true;
-                            recommencer = false;
-                        }
-                        else if(equals(reponse, "1")){// améliorations
-                            finiAmelioration = false;
-                            infoAchat = " ";
-                            while(!finiAmelioration){
-                                do{
-                                    afficherMenuJCJ(premierJoueur, "GUI_Amelorations_JCJ");
-                                    println(infoAchat);
-                                    print("Entre ton choix : ");
-                                }while(reponseNonvide(reponse));
-                                if(equals(reponse, "0")){
-                                    finiAmelioration = true;
-                                }
-                                else if(equals(reponse, "1")){
-                                    if(premierJoueur.JCJ_score>=5){
-                                        premierJoueur.JCJ_score-=5;
-                                        infoAchat = "Achat effectuer avec succès !";
-                                        pointsAccorderPremierJoueur+=1;
-                                    }
-                                    else{
-                                        infoAchat = "Tu n'as pas assez de point pour l'acheter.";
-                                    }
-                                }
-                                else if(equals(reponse, "2")){
-                                    if(premierJoueur.JCJ_score>=3){
-                                        premierJoueur.JCJ_score-=3;
-                                        infoAchat = "Achat effectuer avec succès !";
-                                        premierJoueur.JCJ_vies+=1;
-                                    }
-                                    else{
-                                        infoAchat = "Tu n'as pas assez de point pour l'acheter.";
-                                    }
-                                }
-                            }
-                        }
-                        else if(equals(reponse, "2")){// malus
-                            finiMalus = false;
-                            infoAchat = " ";
-                            while(!finiAmelioration){
-                                do{
-                                    afficherMenuJCJ(premierJoueur, "GUI_Malus_JCJ");
-                                    println(infoAchat);
-                                    print("Entre ton choix : ");
-                                }while(reponseNonvide(reponse));
-                                if(equals(reponse, "0")){
-                                    finiMalus = true;
-                                }
-                                else if(equals(reponse, "1")){
-                                    if(premierJoueur.JCJ_score>=5){
-                                        premierJoueur.JCJ_score-=5;
-                                        infoAchat = "Achat effectuer avec succès !";
-                                        pointsAccorderDeuxiemeJoueur-=1;
-                                    }
-                                    else{
-                                        infoAchat = "Tu n'as pas assez de point pour l'acheter.";
-                                    }
-                                }
-                                else if(equals(reponse, "2")){
-                                    if(premierJoueur.JCJ_score>=3){
-                                        premierJoueur.JCJ_score-=3;
-                                        infoAchat = "Achat effectuer avec succès !";
-                                        deuxiemeJoueur.JCJ_vies-=1;
-                                    }
-                                    else{
-                                        infoAchat = "Tu n'as pas assez de point pour l'acheter.";
-                                    }
-                                }
-                            }
-                        }
-                        else{// Jeu
-                            if(bonresultat(reponse, motactuel, langue)){
-                                premierJoueur.JCJ_score+=pointsAccorderPremierJoueur;
-                            }
-                            else{
-                                premierJoueur.JCJ_vies--;
-                            }
-                            GUI = MAJ_InfoJeuJCJ(GUI, premierJoueur, deuxiemeJoueur);
-                            tourFini = true;
-                        }
-                    }
-                    if(!quitter){
+                    
+                    partie = lancerTourPremierJoueur(partie, listeMots);
+                    
+                    if(!partie.quitter){
                         tourFini = false;
                     }
                     motactuel = listeMots[(int)(random()*length(listeMots,1))];
@@ -755,6 +658,7 @@
                             reponse = readString();
                         }while(!reponseNonvide(reponse));
                         if(equals(reponse, "0")){// quitter
+                            tourFini = true;
                             quitter = true;
                             recommencer = false;
                         }
@@ -762,11 +666,13 @@
                             finiAmelioration = false;
                             infoAchat = " ";
                             while(!finiAmelioration){
+                                reponse = "";
                                 do{
-                                    afficherMenuJCJ(deuxiemeJoueur, "GUI_Amelorations_JCJ");
+                                    afficherMenuJCJ(deuxiemeJoueur, "GUI_Ameliorations_JCJ");
                                     println(infoAchat);
                                     print("Entre ton choix : ");
-                                }while(reponseNonvide(reponse));
+                                    reponse = readString();
+                                }while(!reponseNonvide(reponse));
                                 if(equals(reponse, "0")){
                                     finiAmelioration = true;
                                 }
@@ -774,7 +680,7 @@
                                     if(deuxiemeJoueur.JCJ_score>=5){
                                         deuxiemeJoueur.JCJ_score-=5;
                                         infoAchat = "Achat effectuer avec succès !";
-                                        pointsAccorderDeuxiemeJoueur+=1;
+                                        partie.pointsAccorderDeuxiemeJoueur+=1;
                                     }
                                     else{
                                         infoAchat = "Tu n'as pas assez de point pour l'acheter.";
@@ -790,17 +696,20 @@
                                         infoAchat = "Tu n'as pas assez de point pour l'acheter.";
                                     }
                                 }
+                                GUI = MAJ_InfoJeuJCJ(GUI, premierJoueur, deuxiemeJoueur);
                             }
                         }
                         else if(equals(reponse, "2")){// malus
                             finiMalus = false;
                             infoAchat = " ";
-                            while(!finiAmelioration){
+                            while(!finiMalus){
+                                reponse = "";
                                 do{
                                     afficherMenuJCJ(deuxiemeJoueur, "GUI_Malus_JCJ");
                                     println(infoAchat);
                                     print("Entre ton choix : ");
-                                }while(reponseNonvide(reponse));
+                                    reponse = readString();
+                                }while(!reponseNonvide(reponse));
                                 if(equals(reponse, "0")){
                                     finiMalus = true;
                                 }
@@ -808,7 +717,7 @@
                                     if(deuxiemeJoueur.JCJ_score>=5){
                                         deuxiemeJoueur.JCJ_score-=5;
                                         infoAchat = "Achat effectuer avec succès !";
-                                        pointsAccorderPremierJoueur-=1;
+                                        partie.pointsAccorderPremierJoueur-=1;
                                     }
                                     else{
                                         infoAchat = "Tu n'as pas assez de point pour l'acheter.";
@@ -824,11 +733,12 @@
                                         infoAchat = "Tu n'as pas assez de point pour l'acheter.";
                                     }
                                 }
+                                GUI = MAJ_InfoJeuJCJ(GUI, premierJoueur, deuxiemeJoueur);
                             }
                         }
                         else{
                             if(bonresultat(reponse, motactuel, langue)){// jeu
-                                deuxiemeJoueur.JCJ_score+=pointsAccorderDeuxiemeJoueur;
+                                deuxiemeJoueur.JCJ_score+=partie.pointsAccorderDeuxiemeJoueur;
                             }
                             else{
                                 deuxiemeJoueur.JCJ_vies--;
@@ -841,6 +751,165 @@
             }
             Utilisateur[] userList = new Utilisateur[]{premierJoueur, deuxiemeJoueur};
             return userList;
+        }
+
+        partieJCJ initialiserPartieJCJ(String[] GUI, Utilisateur premierJoueur, Utilisateur deuxiemeJoueur){
+            partieJCJ partie = new partieJCJ();
+            partie.premierJoueur = premierJoueur;
+            partie.deuxiemeJoueur = deuxiemeJoueur;
+            partie.GUI = GUI;
+            partie.pointsAccorderPremierJoueur = 1;
+            partie.pointsAccorderDeuxiemeJoueur = 1;
+            return partie;
+        }
+
+        partieJCJ lancerTourPremierJoueur(partieJCJ partie, Mot[] listeMots){
+            boolean tourFini = false;
+            String reponse;
+            String langue = choixlangue();
+            while(!tourFini){
+                partie.GUI = MAJ_AvanceJCJ(GUI, motactuel, langue, 1);
+                partie.GUI = MAJ_InfoJeuJCJ(GUI, premierJoueur, deuxiemeJoueur);
+                Mot motactuel = listeMots[(int)(random()*length(listeMots,1))];
+
+                reponse = questionnerReponse(partie.GUI);
+                if(equals(reponse, "0")){// quitter
+                    tourFini = true;
+                    partie.quitter = true;
+                    partie.recommencer = false;
+                }
+                else if(equals(reponse, "1")){// améliorations
+                    partie = lancerMenuAmelioration(partie, 1);
+                    
+                }
+                else if(equals(reponse, "2")){// malus
+                    finiMalus = false;
+                    infoAchat = " ";
+                    while(!finiMalus){
+                        reponse = "";
+                        do{
+                            afficherMenuJCJ(premierJoueur, "GUI_Malus_JCJ");
+                            println(infoAchat);
+                            print("Entre ton choix : ");
+                            reponse = readString();
+                        }while(!reponseNonvide(reponse));
+                        if(equals(reponse, "0")){
+                            finiMalus = true;
+                        }
+                        else if(equals(reponse, "1")){
+                            if(premierJoueur.JCJ_score>=5){
+                                premierJoueur.JCJ_score-=5;
+                                infoAchat = "Achat effectuer avec succès !";
+                                partie.pointsAccorderDeuxiemeJoueur-=1;
+                            }
+                            else{
+                                infoAchat = "Tu n'as pas assez de point pour l'acheter.";
+                            }
+                        }
+                        else if(equals(reponse, "2")){
+                            if(premierJoueur.JCJ_score>=3){
+                                premierJoueur.JCJ_score-=3;
+                                infoAchat = "Achat effectuer avec succès !";
+                                deuxiemeJoueur.JCJ_vies-=1;
+                            }
+                            else{
+                                infoAchat = "Tu n'as pas assez de point pour l'acheter.";
+                            }
+                        }
+                        GUI = MAJ_InfoJeuJCJ(GUI, premierJoueur, deuxiemeJoueur);
+                    }
+                }
+                else{// Jeu
+                    if(bonresultat(reponse, motactuel, langue)){
+                        premierJoueur.JCJ_score+=partie.pointsAccorderPremierJoueur;
+                    }
+                    else{
+                        premierJoueur.JCJ_vies--;
+                    }
+                    GUI = MAJ_InfoJeuJCJ(GUI, premierJoueur, deuxiemeJoueur);
+                    tourFini = true;
+                }
+            }
+        }
+
+        String questionnerReponse(String[] GUI){
+            String reponse;
+            do{
+                affichage(GUI);
+                println();
+                print("Entre ta réponse : ");
+                reponse = readString();
+            }while(!reponseNonvide(reponse));
+            return reponse;
+        }
+
+        partieJCJ lancerMenuAmelioration(partieJCJ partie, int numJoueur){
+            boolean finiAmelioration = false;
+            String infoAchat;
+            String reponse;
+            while(!finiAmelioration){
+                String[] menuAmelioration = initialiserMenuJCJ(partie.premierJoueur, "GUI_Amelioration_JCJ");
+                reponse = questionnerReponse(menuAmelioration);
+                if(equals(reponse, "0")){
+                    finiAmelioration = true;
+                }
+                else if(equals(reponse, "1")){
+                    partie = acheterPointAccorder(partie, numJoueur); 
+                }
+                else if(equals(reponse, "2")){
+                    partie = acheterVie(partie, numJoueur);
+                }
+                partie.GUI = MAJ_InfoJeuJCJ(GUI, premierJoueur, deuxiemeJoueur);
+            }
+            return partie
+        }
+
+        partieJCJ acheterPointAccorder(partie, int numJoueur){
+            if(numJoueur==1){// Si c'est le premier joueur.
+                if(partie.premierJoueur.JCJ_score>=5){
+                    partie.premierJoueur.JCJ_score-=5;
+                    println("Achat effectuer avec succès !");
+                    partie.pointsAccorderPremierJoueur+=1;
+                }
+                else{
+                    println("Tu n'as pas assez de point pour l'acheter.");
+                }
+            }
+            else if(numJoueur==2){// Si c'est le deuxième joueur.
+                if(deuxiemeJoueur.JCJ_score>=5){
+                    deuxiemeJoueur.JCJ_score-=5;
+                    println("Achat effectuer avec succès !");
+                    partie.pointsAccorderDeuxiemeJoueur+=1;
+                }
+                else{
+                    println("Tu n'as pas assez de point pour l'acheter.");
+                }
+            }
+            return partie;
+        }
+
+        partieJCJ acheterVie(partieJCJ partie, int numJoueur){
+            if(numJoueur==1){// Si c'est le premier joueur.
+                if(partie.premierJoueur.JCJ_score>=3){
+                    partie.premierJoueur.JCJ_score-=3;
+                    println("Achat effectuer avec succès !");
+                    partie.premierJoueur.JCJ_vies+=1;
+                }
+                else{
+                    println("Tu n'as pas assez de point pour l'acheter.");
+                }
+            }
+            else if(numJoueur==2){
+                if(partie.deuxiemeJoueur.JCJ_score>=3){
+                    partie.deuxiemeJoueur.JCJ_score-=3;
+                    println("Achat effectuer avec succès !");
+                    partie.deuxiemeJoueur.JCJ_vies+=1;
+                }
+                else{
+                    println("Tu n'as pas assez de point pour l'acheter.");
+                }
+            }
+            return partie;
         }
 
         String[] initialiser_GUI_JCJ(String[] GUI, Utilisateur premierJoueur, Utilisateur deuxiemeJoueur){
@@ -959,10 +1028,10 @@
             }
         }
 
-        void afficherMenuJCJ(Utilisateur joueur, String fichier){
+        String[] initialiserMenuJCJ(Utilisateur joueur, String fichier){
             String[] GUI = initialiseStringTable(fichier);
             GUI[1] = integrerIdentifiantsMenu(GUI[1], joueur);
-            affichage(GUI);
+            return GUI;
         }
 
 
